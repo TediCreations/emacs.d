@@ -1,14 +1,10 @@
-# Executables
-*.elf
-*.exe
-*.out
-
-# Object files
-*.o
-*.obj
-
 # Auto-generated files
 *init.el#
+recentf
+ac-comphist.dat
+.emacs.desktop
+.emacs.desktop.lock
 
 # Folders
 auto-save-list
+elpa

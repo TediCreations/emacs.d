@@ -3,13 +3,16 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
+	     '("MELPA" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives
+             '("MELPA Stable" . "http://stable.melpa.org/packages/") t)
 ;;(add-to-list 'package-archives
 ;;	     '("melpa2" . "http://www.mirrorservice.org/sites/melpa.org/packages/"))
 ;;(add-to-list 'package-archives
 ;;	     '("melpa3" . "http://www.mirrorservice.org/sites/stable.melpa.org/packages/"))
 
 (package-initialize)
+;;(package-refresh-contents)
 
 ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
@@ -55,6 +58,13 @@
     (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history) ))
 
+;;------------------------------------------------------------------------------
+;;Navigation
+(use-package avy
+  :ensure t
+  :bind ("M-s" . avy-goto-char))
+
+;;------------------------------------------------------------------------------
 ;;Theme
 (use-package zenburn-theme
   :ensure t
@@ -100,7 +110,6 @@
 ;;(ido-mode 1)
 
 (defalias 'list-buffers 'ibuffer)
-;;(defalias 'list-buffers 'ibuffer-other-window)
 
 ;;------------------------------------------------------------------------------
 ;;Autocomplete
@@ -112,6 +121,7 @@
     (global-auto-complete-mode t)
     ))
 
+;;------------------------------------------------------------------------------
 ;; Tags for code navigation
 (use-package ggtags
   :ensure t
