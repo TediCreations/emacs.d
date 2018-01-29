@@ -1,0 +1,14 @@
+# Executables
+*.elf
+*.exe
+*.out
+
+# Object files
+*.o
+*.obj
+
+# Auto-generated files
+*init.el#
+
+# Folders
+auto-save-list
