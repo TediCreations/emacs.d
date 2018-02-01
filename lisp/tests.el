@@ -11,16 +11,14 @@
 ;; “python”: What Python developers use for extension modules
 ;; “java”: The default style for java-mode (see below)
 ;; “user”: When you want to define your own style
-(setq
- c-default-style "linux" ;; set style to "linux"
- )
+(setq c-default-style "linux") ;; set style to "linux"
 
 
 
 
 ;;------------------------------------------------------------------------------
 ;;Test that all is working
-(global-set-key (kbd "<f1>")
+(global-set-key (kbd "<f5>")
                 (lambda ()
                   (interactive)
                   (message "Works!")))
