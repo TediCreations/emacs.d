@@ -12,7 +12,7 @@
 (defun my:ac-c-header-init()
   (require 'auto-complete-c-headers)
   (add-to-list 'ac-sources
-			   'ac-sources-c-headers)
+	       'ac-sources-c-headers)
   (add-to-list -achead:include-directories '"/usr/include/c++/5\
  /usr/include/x86_64-linux-gnu/c++/5\
  /usr/include/c++/5/backward\
@@ -39,9 +39,9 @@
   :ensure t
   :config 
   (add-hook 'c-mode-common-hook
-			(lambda ()
-			  (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-				(ggtags-mode 1))))
+	    (lambda ()
+	      (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+		(ggtags-mode 1))))
   )
 
 ;;------------------------------------------------------------------------------

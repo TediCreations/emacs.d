@@ -22,7 +22,7 @@
 (desktop-save-mode 1)                             ;;Save session
 (set-frame-parameter nil 'fullscreen 'fullboth)   ;;Make fullscreen
 (menu-bar-mode -1)                                ;;Hide menu
-;;(global-set-key (kbd "<f5>") 'menu-bar-mode)      ;;Toggle menu-bar
+;;(global-set-key (kbd "<f5>") 'menu-bar-mode)      ;;Toggle menu-bar;;No need as f10 by default
 
 ;;------------------------------------------------------------------------------
 ;;Editor
@@ -30,14 +30,31 @@
 (column-number-mode t)                            ;; Show the column number V
 (global-set-key (kbd "RET") 'newline-and-indent)  ;; Automatically indent when press RET
 (global-set-key (kbd "C-c w") 'whitespace-mode)   ;; View all whitespace characters
-(setq-default indent-tabs-mode t)                 ;; Indentation is tabs
-(setq-default tab-width 8)                        ;; Tab is represented by 8 spaces
 
 ;; show unncessary whitespace that can mess up your diff
 (add-hook 'prog-mode-hook
-		  (lambda()
-			(interactive)
-			(setq show-trailing-whitespace 1)))
+	  (lambda()
+	    (interactive)
+	    (setq show-trailing-whitespace 1)))
+
+;;------------------------------------------------------------------------------
+;;Coding style
+;; Available C style:
+;; “gnu”: The default style for GNU projects
+;; “k&r”: What Kernighan and Ritchie, the authors of C used in their book
+;; “bsd”: What BSD developers use, aka “Allman style” after Eric Allman.
+;; “whitesmith”: Popularized by the examples that came with Whitesmiths C, an early commercial C compiler.
+;; “stroustrup”: What Stroustrup, the author of C++ used in his book
+;; “ellemtel”: Popular C++ coding standards as defined by “Programming in C++, Rules and Recommendations,” Erik Nyquist and Mats Henricson, Ellemtel
+;; “linux”: What the Linux developers use for kernel development
+;; “python”: What Python developers use for extension modules
+;; “java”: The default style for java-mode (see below)
+;; “user”: When you want to define your own style
+(setq-default indent-tabs-mode t)                 ;;Indentation is tabs
+(setq-default tab-width 8)                        ;;Tab is represented by 8 spaces.
+
+(setq c-default-style "linux"                     ;;Coding style of linux
+      c-basic-offset 8)                           ;;Change indentation of tab by 8 spaces.
 
 ;;------------------------------------------------------------------------------
 ;;Theme
@@ -103,7 +120,7 @@
 ;;Brings up help on key combinations
 (use-package which-key
   :ensure t
-  :config	(which-key-mode))
+  :config (which-key-mode))
 
 ;;------------------------------------------------------------------------------
 ;;Windows
@@ -123,6 +140,6 @@
 ;;(setq ido-everywhere t)
 ;;(ido-mode 1)
 
-(defalias 'list-buffers 'ibuffer)
+(defalias 'list-buffers 'ibuffer)                 ;;Change the name of the 'all buffer list'.
 
 (provide 'tedi-initialize)
