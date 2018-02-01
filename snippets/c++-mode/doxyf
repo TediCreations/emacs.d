@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: doxyfunction
+# key: doxyf
+# --
+/**
+ * \brief $0.
+ *
+ *
+ *
+ * \params[in] .
+ * \params[in] .
+ * \params[in] .
+ *
+ * \see .
+ *
+ * \return     .
+ * \retval    -1    Failure.
+ * \retval     0    Success.
+ */

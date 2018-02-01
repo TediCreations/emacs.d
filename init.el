@@ -4,17 +4,19 @@
 (require 'tedi-initialize)
 
 ;;C/C++ IDE
-;;(load "~/.emacs.d/lisp/c_cpp_ide" )
-;;(require 'tedi-c_cpp_ide)
+(load "~/.emacs.d/lisp/c_cpp_ide" )
+(require 'tedi-c_cpp_ide)
 
 ;;Tests
-(load "~/.emacs.d/lisp/tests" )
-(require 'tedi-tests)
+;;(load "~/.emacs.d/lisp/tests" )
+;;(require 'tedi-tests)
 
-(require 'whitespace)
-(setq whitespace-style '(face empty tabs lines-tail trailing))
-(global-whitespace-mode t)
-
+;;------------------------------------------------------------------------------
+;;Test that all is working
+(global-set-key (kbd "<f5>")
+                (lambda ()
+                  (interactive)
+                  (message "Works!")))
 
 
 ;;------------------------------------------------------------------------------

@@ -38,6 +38,13 @@
 	    (setq show-trailing-whitespace 1)))
 
 ;;------------------------------------------------------------------------------
+;;Visualize whitespace
+(require 'whitespace)
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+(global-whitespace-mode t)
+
+
+;;------------------------------------------------------------------------------
 ;;Coding style
 ;; Available C style:
 ;; “gnu”: The default style for GNU projects

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: if
+# key: if
+# --
+if (int i=N; i < 0; i--) {
+        $0
+}
