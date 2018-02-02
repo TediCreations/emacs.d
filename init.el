@@ -8,8 +8,8 @@
 (require 'tedi-c_cpp_ide)
 
 ;;Tests
-;;(load "~/.emacs.d/lisp/tests" )
-;;(require 'tedi-tests)
+(load "~/.emacs.d/lisp/tests" )
+(require 'tedi-tests)
 
 ;;------------------------------------------------------------------------------
 ;;Test that all is working
@@ -17,9 +17,3 @@
                 (lambda ()
                   (interactive)
                   (message "Works!")))
-
-
-;;------------------------------------------------------------------------------
-;;Test
-;;(set-face-attribute 'default nil :font "OCR A Extended" )
-;;(set-frame-font "OCR A Extended" nil t)
