@@ -38,6 +38,11 @@
 	    (setq show-trailing-whitespace 1)))
 
 ;;------------------------------------------------------------------------------
+;;Fonts
+(set-default-font "Source Code Pro" nil t)        ;;Default font
+(set-face-attribute 'default nil :height 100)     ;;Default font size %
+
+;;------------------------------------------------------------------------------
 ;;Visualize whitespace
 (require 'whitespace)
 (setq whitespace-style '(face empty tabs lines-tail trailing))
@@ -75,6 +80,25 @@
 
 ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 ;;(load-theme 'tedi t)
+
+;;------------------------------------------------------------------------------
+;;Mode line theme
+(display-time-mode)                               ;;Show time V
+(use-package smart-mode-line
+  :ensure t)
+(require 'smart-mode-line)
+;;(setq powerline-arrow-shape 'curve)
+;;(setq powerline-default-separator-dir '(right . left))
+;;(setq sml/theme 'powerline)
+(setq sml/no-confirm-load-theme t)
+(setq sml/theme 'dark)
+(setq sml/mode-width 0)
+(setq sml/name-width 20)
+(rich-minority-mode 1)
+(setf rm-blacklist "")
+(use-package smart-mode-line-powerline
+  :ensure t)
+(sml/setup)
 
 ;;------------------------------------------------------------------------------
 ;;Search
