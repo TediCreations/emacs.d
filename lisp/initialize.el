@@ -141,7 +141,7 @@
 (use-package iedit
   :ensure t)
 (require 'iedit)
-(define-key global-map (kbd "C-c ;") 'iedit-mode)
+;;(define-key global-map (kbd "C-c ;") 'iedit-mode);;This is not a bug in linux(only Mac)
 
 ;;------------------------------------------------------------------------------
 ;;Let's you try packages without installing them

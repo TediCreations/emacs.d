@@ -1,4 +1,15 @@
 ;;------------------------------------------------------------------------------
+;;Syntax check with cpplint.py
+(defun my:flymake-google-init()
+  (require 'flymake-google-cpplint)
+  (custom-set-variables
+   '(flymake-google-cpplint-command "/usr/local/bin/cpplint"))
+  (flymake-google-cpplint-load)
+  )
+(add-hook 'c-mode-hook 'my:flymake-google-init)
+(add-hook 'c++-mode-hook 'my:flymake-google-init)
+
+;;------------------------------------------------------------------------------
 ;; Tags for code navigation
 (use-package ggtags
   :ensure t

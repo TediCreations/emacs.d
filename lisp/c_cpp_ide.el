@@ -33,6 +33,4 @@
 (add-hook 'c++-mode-hook 'my:ac-c-header-init)
 (add-hook 'c-mode-hook 'my:ac-c-header-init)
 
-
-
 (provide 'tedi-c_cpp_ide)
