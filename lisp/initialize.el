@@ -8,11 +8,12 @@
 (package-initialize);;initialize package.el
 ;;(package-refresh-contents)
 
+;;TODO: http://nilsdeppe.com/posts/emacs-c++-ide
+
 ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
 
 ;;------------------------------------------------------------------------------
 ;;Workplace
@@ -22,7 +23,11 @@
 (desktop-save-mode 1)                             ;;Save session
 (set-frame-parameter nil 'fullscreen 'fullboth)   ;;Make fullscreen
 (menu-bar-mode -1)                                ;;Hide menu
+(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y and n instead of yes and no
+(setq auto-save-default nil)                      ;;Remove auto-save #...#
 ;;(global-set-key (kbd "<f5>") 'menu-bar-mode)      ;;Toggle menu-bar;;No need as f10 by default
+(global-set-key (kbd "M-g") 'goto-line)           ;;Got to line number
+(global-set-key (kbd "C-x k") 'kill-this-buffer)  ;;Kill buffer in window without asking y/n
 
 ;;------------------------------------------------------------------------------
 ;;Editor
@@ -36,6 +41,13 @@
 	  (lambda()
 	    (interactive)
 	    (setq show-trailing-whitespace 1)))
+
+;;------------------------------------------------------------------------------
+;;Calculator
+(global-set-key (kbd "C-=") 'calc)                ;;Add calculator functionality
+(use-package calc
+  :defer t
+  :config (setf calc-display-trail nil))          ;;Do not let calculator display a window
 
 ;;------------------------------------------------------------------------------
 ;;Fonts

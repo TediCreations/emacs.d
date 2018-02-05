@@ -8,12 +8,12 @@
 (require 'tedi-c_cpp_ide)
 
 ;;Tests
-(load "~/.emacs.d/lisp/tests" )
-(require 'tedi-tests)
+;;(load "~/.emacs.d/lisp/tests" )
+;;(require 'tedi-tests)
 
 ;;------------------------------------------------------------------------------
 ;;Check that all is working
-(global-set-key (kbd "<f5>")
+(global-set-key (kbd "<f7>")
                 (lambda ()
                   (interactive)
                   (message "Works!")))

@@ -37,3 +37,5 @@
 ;;Test
 ;;(set-face-attribute 'default nil :font "OCR A Extended" )
 ;;(set-frame-font "OCR A Extended" nil t)
+
+;;(global-set-key (kbd "<f5>") (expose #'revert-buffer nil t))
