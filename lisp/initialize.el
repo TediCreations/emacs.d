@@ -3,9 +3,10 @@
 (require 'package);;start package.el
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("MELPA" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("MELPA Stable" . "http://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("MELPA Stable" .
+				 "http://stable.melpa.org/packages/") t)
 
-(package-initialize);;initialize package.el
+(package-initialize)                              ;;Initialize package.el
 ;;(package-refresh-contents)
 
 ;;TODO: http://nilsdeppe.com/posts/emacs-c++-ide
@@ -17,41 +18,67 @@
 
 ;;------------------------------------------------------------------------------
 ;;Workplace
-(setq inhibit-startup-message t)                  ;;Do not shown start-up screen
-(tool-bar-mode -1)                                ;;Remove toolbar
-(scroll-bar-mode -1)                              ;;Remove scroll-bar
-(desktop-save-mode 1)                             ;;Save session
-(set-frame-parameter nil 'fullscreen 'fullboth)   ;;Make fullscreen
-(menu-bar-mode -1)                                ;;Hide menu
-(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y and n instead of yes and no
+(setq inhibit-startup-message t)                  ;;Don't shown start-up screen.
+(setq initial-scratch-message nil)                ;;Not scratch message.
+(tool-bar-mode -1)                                ;;Remove toolbar.
+(scroll-bar-mode -1)                              ;;Remove scroll-bar.
+(desktop-save-mode 1)                             ;;Save session.
+(set-frame-parameter nil 'fullscreen 'fullboth)   ;;Make fullscreen.
+(menu-bar-mode -1)                                ;;Hide menu.
+(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y & n instead of yes & no
 (setq auto-save-default nil)                      ;;Remove auto-save #...#
-;;(global-set-key (kbd "<f5>") 'menu-bar-mode)      ;;Toggle menu-bar;;No need as f10 by default
-(global-set-key (kbd "M-g") 'goto-line)           ;;Got to line number
-(global-set-key (kbd "C-x k") 'kill-this-buffer)  ;;Kill buffer in window without asking y/n
+;;(global-set-key (kbd "<f5>") 'menu-bar-mode)    ;;Toggle menu-bar ;;No need as
+                                                  ;;  f10 by default.
+(global-set-key (kbd "M-g") 'goto-line)           ;;Got to line number.
+(global-set-key (kbd "C-x k") 'kill-this-buffer)  ;;Kill buffer in window
+                                                  ;;  without asking y/n.
+
+(blink-cursor-mode -1)                            ;;Do not blink cursor.
+(prefer-coding-system 'utf-8-unix)                ;;Always use the one true
+                                                  ;;  encoding.
+
+
+
 
 ;;------------------------------------------------------------------------------
 ;;Editor
-(global-linum-mode t)                             ;; Show line numbers <
-(column-number-mode t)                            ;; Show the column number V
-(global-set-key (kbd "RET") 'newline-and-indent)  ;; Automatically indent when press RET
-(global-set-key (kbd "C-c w") 'whitespace-mode)   ;; View all whitespace characters
+(global-linum-mode t)                             ;;Show line numbers left.
+(column-number-mode t)                            ;;Show the column number at
+                                                  ;;  the powerline.
+(global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
+                                                  ;;  press RET.
+(global-set-key (kbd "C-c w") 'whitespace-mode)   ;;View all whitespace chars.
 
-;; show unncessary whitespace that can mess up your diff
+;;Show unncessary whitespace that can mess up your diff
 (add-hook 'prog-mode-hook
 	  (lambda()
 	    (interactive)
 	    (setq show-trailing-whitespace 1)))
 
 ;;------------------------------------------------------------------------------
+;;Make window 80 columns wide
+(defun set-window-width (n)
+  "Set the selected window's width."
+  (adjust-window-trailing-edge (selected-window) (- n (window-width)) t))
+
+(defun set-80-columns ()
+  "Set the selected window to 80 columns."
+  (interactive)
+  (set-window-width 80))
+
+(global-set-key (kbd "C-x `") 'set-80-columns)    ;;Make window 80 columns wide
+
+;;------------------------------------------------------------------------------
 ;;Calculator
 (global-set-key (kbd "C-=") 'calc)                ;;Add calculator functionality
 (use-package calc
   :defer t
-  :config (setf calc-display-trail nil))          ;;Do not let calculator display a window
+  :config (setf calc-display-trail nil))          ;;Do not let calculator
+                                                  ;;  display a window
 
 ;;------------------------------------------------------------------------------
 ;;Fonts
-(set-default-font "Source Code Pro" nil t)        ;;Default font
+(set-default-font "Source Code Pro-10" nil t)     ;;Default font
 (set-face-attribute 'default nil :height 100)     ;;Default font size %
 
 ;;------------------------------------------------------------------------------
@@ -62,23 +89,14 @@
 
 
 ;;------------------------------------------------------------------------------
-;;Coding style
-;; Available C style:
-;; “gnu”: The default style for GNU projects
-;; “k&r”: What Kernighan and Ritchie, the authors of C used in their book
-;; “bsd”: What BSD developers use, aka “Allman style” after Eric Allman.
-;; “whitesmith”: Popularized by the examples that came with Whitesmiths C, an early commercial C compiler.
-;; “stroustrup”: What Stroustrup, the author of C++ used in his book
-;; “ellemtel”: Popular C++ coding standards as defined by “Programming in C++, Rules and Recommendations,” Erik Nyquist and Mats Henricson, Ellemtel
-;; “linux”: What the Linux developers use for kernel development
-;; “python”: What Python developers use for extension modules
-;; “java”: The default style for java-mode (see below)
-;; “user”: When you want to define your own style
+;; Available C coding style:
 (setq-default indent-tabs-mode t)                 ;;Indentation is tabs
-(setq-default tab-width 8)                        ;;Tab is represented by 8 spaces.
+(setq-default tab-width 8)                        ;;Tab is represented by
+                                                  ;;  8 spaces.
 
 (setq c-default-style "linux"                     ;;Coding style of linux
-      c-basic-offset 8)                           ;;Change indentation of tab by 8 spaces.
+      c-basic-offset 8)                           ;;Change indentation of tab
+                                                  ;;  by 8 spaces.
 
 ;;------------------------------------------------------------------------------
 ;;Theme
@@ -95,7 +113,7 @@
 
 ;;------------------------------------------------------------------------------
 ;;Mode line theme
-(display-time-mode)                               ;;Show time V
+(display-time-mode)                               ;;Show time in powerline.
 (use-package smart-mode-line
   :ensure t)
 (require 'smart-mode-line)
@@ -114,10 +132,10 @@
 
 ;;------------------------------------------------------------------------------
 ;;Search
-(use-package counsel;;counsel is requirement for swiper
+(use-package counsel                              ;;is a requirement for swiper
   :ensure t)
 
-(use-package swiper
+(use-package swiper                               ;;Makes search easier
   :ensure try
   :config
   (progn
@@ -153,7 +171,9 @@
 (use-package iedit
   :ensure t)
 (require 'iedit)
-;;(define-key global-map (kbd "C-c ;") 'iedit-mode);;This is not a bug in linux(only Mac)
+
+;;This is a bug in Mac but in linux worls.(I do not need a fix)
+;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
 
 ;;------------------------------------------------------------------------------
 ;;Let's you try packages without installing them
@@ -167,14 +187,14 @@
 
 ;;------------------------------------------------------------------------------
 ;;Windows
-(winner-mode 1);;Remember old configuration
-(windmove-default-keybindings);;Enables traversing througth windows with shift+arrow keys
+(winner-mode 1)                                   ;;Remember old configuration.
+(windmove-default-keybindings)                    ;;Enables traversing througth
+                                                  ;;  windows with shift+arrows.
 (use-package ace-window
   :ensure t
   :init
   (progn
-    (global-set-key [remap-other-window] 'ace-window)
-    ))
+    (global-set-key [remap-other-window] 'ace-window)))
 
 ;;------------------------------------------------------------------------------
 ;;Buffers
@@ -183,6 +203,7 @@
 ;;(setq ido-everywhere t)
 ;;(ido-mode 1)
 
-(defalias 'list-buffers 'ibuffer)                 ;;Change the name of the 'all buffer list'.
+(defalias 'list-buffers 'ibuffer)                 ;;Change the name of the
+                                                  ;;  'all buffer list'.
 
 (provide 'tedi-initialize)

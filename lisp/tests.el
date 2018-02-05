@@ -39,3 +39,37 @@
 ;;(set-frame-font "OCR A Extended" nil t)
 
 ;;(global-set-key (kbd "<f5>") (expose #'revert-buffer nil t))
+
+;;------------------------------------------------------------------------------
+;;Clipboard
+;; Do sensible clipboard things, please
+;;(setf select-enable-clipboard nil
+;;      select-enable-primary t
+;;      mouse-drag-copy-region t
+;;      mouse-yank-at-point t)
+
+;;------------------------------------------------------------------------------
+;; Tabs
+(defun toggle-tab-width ()
+  (interactive)
+  (let* ((loop [8 4 2])
+         (match (or (cl-position tab-width loop) -1)))
+    (setf tab-width (aref loop (mod (1+ match) (length loop))))))
+(global-set-key (kbd "C-h t") 'toggle-tab-width)  ;;Switch tabs size
+
+;;------------------------------------------------------------------------------
+;;Backups
+(setf backup-inhibited t)                       ;;Enable buffer back-ups.
+
+;;(setf auto-save-default nil)
+;(setf auto-save-list-file-prefix (locate-user-emacs-file "local/saves"))
+;(setf wdired-allow-to-change-permissions t)
+;;(setf echo-keystrokes 0.1)                        ;;Display keystrokes
+                                                  ;;  immediately.
+;;(setf delete-active-region nil)
+;;(setf disabled-command-function nil)
+;;(setf custom-file (make-temp-file "emacs-custom"))
+;;(setf large-file-warning-threshold 536870911)
+;;(setf gc-cons-threshold (* 1024 1024 32))
+
+;;(setf ring-bell-function (lambda ()))             ;;Turn-off alarms

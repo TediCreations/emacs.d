@@ -13,8 +13,7 @@
   (progn
     (require 'auto-complete)
     (ac-config-default)
-    (global-auto-complete-mode t)
-    ))
+    (global-auto-complete-mode t)))
 
 (defun my:ac-c-header-init()
   (require 'auto-complete-c-headers)

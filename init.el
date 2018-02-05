@@ -11,9 +11,9 @@
 ;;(load "~/.emacs.d/lisp/tests" )
 ;;(require 'tedi-tests)
 
-;;------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ;;Check that all is working
-(global-set-key (kbd "<f7>")
+(global-set-key (kbd "<f5>")
                 (lambda ()
                   (interactive)
                   (message "Works!")))
