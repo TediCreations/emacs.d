@@ -172,7 +172,7 @@
   :ensure t)
 (require 'iedit)
 
-;;This is a bug in Mac but in linux worls.(I do not need a fix)
+;;This is a bug in Mac but in linux works.(I do not need a fix)
 ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
 
 ;;------------------------------------------------------------------------------
