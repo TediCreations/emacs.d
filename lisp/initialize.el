@@ -117,17 +117,21 @@
 (use-package smart-mode-line
   :ensure t)
 (require 'smart-mode-line)
-;;(setq powerline-arrow-shape 'curve)
-;;(setq powerline-default-separator-dir '(right . left))
-;;(setq sml/theme 'powerline)
+(setq powerline-arrow-shape 'curve)
+(setq powerline-default-separator-dir '(right . left))
+(setq sml/theme 'powerline)
+
 (setq sml/no-confirm-load-theme t)
 (setq sml/theme 'dark)
 (setq sml/mode-width 0)
 (setq sml/name-width 20)
 (rich-minority-mode 1)
 (setf rm-blacklist "")
-(use-package smart-mode-line-powerline
-  :ensure t)
+
+;;This was an error
+;;(use-package smart-mode-line-powerline
+;;  :ensure t)
+
 (sml/setup)
 
 ;;------------------------------------------------------------------------------
