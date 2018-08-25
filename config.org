@@ -1,5 +1,5 @@
 #+STARTUP: overview
-#+TITLE: Kanelis Elias's Emacs
+#+TITLE: TediCreation's Emacs Configuration
 #+CREATOR: Kanelis Elias
 #+LANGUAGE: en
 #+OPTIONS: num:nil
