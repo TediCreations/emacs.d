@@ -67,8 +67,7 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+END_SRC
 
 * Window manager
-** Launchers
-*** dmenu for emacs
+** dmenu
 Launces applications. Has its own cache for most launched applications.
 #+BEGIN_SRC emacs-lisp
   (use-package dmenu
@@ -76,7 +75,6 @@ Launces applications. Has its own cache for most launched applications.
     :bind
       ("s-SPC" . 'dmenu))
 #+END_SRC
-
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
@@ -105,7 +103,7 @@ change the numbers to suit your liking, I find 5 to be enough.
       (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
       (setq dashboard-items '((recents  . 5)
                               (projects . 5)))
-      (setq dashboard-banner-logo-title "TediCreations"))
+      (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code."))
 #+END_SRC
 * Modeline
 The modeline is the heart of emacs, it offers information at all times, it's persistent
