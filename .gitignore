@@ -7,6 +7,10 @@ ac-comphist.dat
 .emacs.desktop
 .emacs.desktop.lock
 
+# Generated files
+config.el
+projectile-bookmarks.eld
+
 # Folders
 auto-save-list
 elpa
