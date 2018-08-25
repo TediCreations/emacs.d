@@ -43,15 +43,15 @@
 
 ;;------------------------------------------------------------------------------
 ;;Workplace
-(setq inhibit-startup-message t)                  ;;Don't shown start-up screen.
-(setq initial-scratch-message nil)                ;;Not scratch message.
-(tool-bar-mode -1)                                ;;Remove toolbar.
-(scroll-bar-mode -1)                              ;;Remove scroll-bar.
+;;(setq inhibit-startup-message t)                  ;;Don't shown start-up screen.
+;;(setq initial-scratch-message nil)                  ;;Not scratch message.
+;;(tool-bar-mode -1)                                ;;Remove toolbar.
+;;(scroll-bar-mode -1)                              ;;Remove scroll-bar.
 (desktop-save-mode 1)                             ;;Save session.
-(set-frame-parameter nil 'fullscreen 'fullboth)   ;;Make fullscreen.
-(menu-bar-mode -1)                                ;;Hide menu.
-(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y & n instead of yes & no
-(setq auto-save-default nil)                      ;;Remove auto-save #...#
+(set-frame-parameter nil 'fullscreen 'fullboth)     ;;Make fullscreen.
+;;(menu-bar-mode -1)                                ;;Hide menu.
+;;(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y & n instead of yes & no
+;;(setq auto-save-default nil)                        ;;Remove auto-save #...#
 ;;(global-set-key (kbd "<f5>") 'menu-bar-mode)    ;;Toggle menu-bar ;;No need as
                                                   ;;  f10 by default.
 (global-set-key (kbd "M-g") 'goto-line)           ;;Got to line number.
@@ -67,8 +67,8 @@
 
 ;;------------------------------------------------------------------------------
 ;;Editor
-(global-linum-mode t)                             ;;Show line numbers left.
-(column-number-mode t)                            ;;Show the column number at
+;;(global-linum-mode t)                             ;;Show line numbers left.
+;;(column-number-mode t)                            ;;Show the column number at
                                                   ;;  the powerline.
 (global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
                                                   ;;  press RET.
@@ -138,26 +138,26 @@
 
 ;;------------------------------------------------------------------------------
 ;;Mode line theme
-(display-time-mode)                               ;;Show time in powerline.
-(use-package smart-mode-line
-  :ensure t)
-(require 'smart-mode-line)
-(setq powerline-arrow-shape 'curve)
-(setq powerline-default-separator-dir '(right . left))
-(setq sml/theme 'powerline)
+;;(display-time-mode)                               ;;Show time in powerline.
+;;(use-package smart-mode-line
+;;  :ensure t)
+;;(require 'smart-mode-line)
+;;(setq powerline-arrow-shape 'curve)
+;;(setq powerline-default-separator-dir '(right . left))
+;;(setq sml/theme 'powerline)
 
-(setq sml/no-confirm-load-theme t)
-(setq sml/theme 'dark)
-(setq sml/mode-width 0)
-(setq sml/name-width 20)
-(rich-minority-mode 1)
-(setf rm-blacklist "")
+;;(setq sml/no-confirm-load-theme t)
+;;(setq sml/theme 'dark)
+;;(setq sml/mode-width 0)
+;;(setq sml/name-width 20)
+;;(rich-minority-mode 1)
+;;(setf rm-blacklist "")
 
 ;;This was an error
 ;;(use-package smart-mode-line-powerline
 ;;  :ensure t)
 
-(sml/setup)
+;;(sml/setup)
 
 ;;------------------------------------------------------------------------------
 ;;Search
@@ -210,9 +210,9 @@
   :ensure t)
 
 ;;Brings up help on key combinations
-(use-package which-key
-  :ensure t
-  :config (which-key-mode))
+;;(use-package which-key
+;;  :ensure t
+;;  :config (which-key-mode))
 
 ;;------------------------------------------------------------------------------
 ;;Windows

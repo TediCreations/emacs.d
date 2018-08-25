@@ -12,8 +12,8 @@
 (require 'tedi-initialize)
 
 ;;C/C++ IDE
-(load "~/.emacs.d/lisp/c_cpp_ide" )
-(require 'tedi-c_cpp_ide)
+;;(load "~/.emacs.d/lisp/c_cpp_ide" )
+;;(require 'tedi-c_cpp_ide)
 
 ;;Tests
 ;;(load "~/.emacs.d/lisp/tests" )

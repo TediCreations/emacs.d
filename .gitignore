@@ -11,6 +11,7 @@ ac-comphist.dat
 config.el
 projectile-bookmarks.eld
 dmenu-items
+.python-environments
 
 # Folders
 auto-save-list
