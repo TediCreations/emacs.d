@@ -186,6 +186,129 @@ symon can be toggled on and off with =Super + h=.
     :bind
     ("s-h" . symon-mode))
 #+END_SRC
+* Minor conveniences
+Emacs is at it's best when it just does things for you, shows you the way, guides you so to speak.
+This can be best achieved using a number of small extensions. While on their own they might not be particularly
+impressive. Together they create a nice environment for you to work in.
+** Visiting the configuration
+Quickly edit =~/.emacs.d/config.org=
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit ()
+    (interactive)
+    (find-file "~/.emacs.d/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit)
+#+END_SRC
+** Reloading the configuration
+Simply pressing =Control-c r= will reload this file, very handy.
+You can also manually invoke =config-reload=.
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+** Subwords
+Emacs treats camelCase strings as a single word by default, this changes said behaviour.
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
+#+END_SRC
+** Electric
+If you write any code, you may enjoy this.
+Typing the first character in a set of 2, completes the second one after your cursor.
+Opening a bracket? It's closed for you already. Quoting something? It's closed for you already.
+
+You can easily add and remove pairs yourself, have a look.
+#+BEGIN_SRC emacs-lisp
+(setq electric-pair-pairs '(
+                           (?\{ . ?\})
+                           (?\( . ?\))
+                           (?\[ . ?\])
+                           (?\" . ?\")
+                           ))
+#+END_SRC
+
+And now to enable it
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode t)
+#+END_SRC
+** Beacon
+While changing buffers or workspaces, the first thing you do is look for your cursor.
+Unless you know its position, you can not move it efficiently. Every time you change
+buffers, the current position of your cursor will be briefly highlighted now.
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :config
+      (beacon-mode 1))
+#+END_SRC
+** Rainbow
+Mostly useful if you are into web development or game development.
+Every time emacs encounters a hexadecimal code that resembles a color, it will automatically highlight
+it in the appropriate color. This is a lot cooler than you may think.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook 'rainbow-mode))
+#+END_SRC
+** Show parens
+I forgot about that initially, it highlights matching parens when the cursor is just behind one of them.
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
+** Rainbow delimiters
+Colors parentheses and other delimiters depending on their depth, useful for any language using them,
+especially lisp.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
+** Expand region
+A pretty simple package, takes your cursor and semantically expands the region, so words, sentences, maybe the contents of some parentheses, it's awesome, try it out.
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind ("C-q" . er/expand-region))
+#+END_SRC
+** Hungry deletion
+On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
+Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
+You may not like it, thus disable it if you must, but it's pretty decent.
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :config
+      (global-hungry-delete-mode))
+#+END_SRC
+** Zapping to char
+A nifty little package that kills all text between your cursor and a selected character.
+A lot more useful than you might think. If you wish to include the selected character in the killed region,
+change =zzz-up-to-char= into =zzz-to-char=.
+#+BEGIN_SRC emacs-lisp
+  (use-package zzz-to-char
+    :ensure t
+    :bind ("M-z" . zzz-up-to-char))
+#+END_SRC
+* Kill ring
+There is a lot of customization to the kill ring, and while I have not used it much before,
+I decided that it was time to change that.
+** Maximum entries on the ring
+The default is 60, I personally need more sometimes.
+#+BEGIN_SRC emacs-lisp
+  (setq kill-ring-max 100)
+#+END_SRC
+** popup-kill-ring
+Out of all the packages I tried out, this one, being the simplest, appealed to me most.
+With a simple M-y you can now browse your kill-ring like browsing autocompletion items.
+C-n and C-p totally work for this.
+#+BEGIN_SRC emacs-lisp
+  (use-package popup-kill-ring
+    :ensure t
+    :bind ("M-y" . popup-kill-ring))
+#+END_SRC
 * Tramp
 #+BEGIN_SRC emacs-lisp
   (setq tramp-default-method "ssh")
