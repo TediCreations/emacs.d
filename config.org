@@ -186,6 +186,10 @@ symon can be toggled on and off with =Super + h=.
     :bind
     ("s-h" . symon-mode))
 #+END_SRC
+* Tramp
+#+BEGIN_SRC emacs-lisp
+  (setq tramp-default-method "ssh")
+#+END_SRC
 * The terminal
 I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
 ** Default shell should be bash
