@@ -10,6 +10,7 @@ ac-comphist.dat
 # Generated files
 config.el
 projectile-bookmarks.eld
+dmenu-items
 
 # Folders
 auto-save-list

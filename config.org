@@ -186,6 +186,23 @@ symon can be toggled on and off with =Super + h=.
     :bind
     ("s-h" . symon-mode))
 #+END_SRC
+* The terminal
+I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
+** Default shell should be bash
+I don't know why this is a thing, but asking me what shell to launch every single
+time I open a terminal makes me want to slap babies, this gets rid of it.
+This goes without saying but you can replace bash with your shell of choice.
+#+BEGIN_SRC emacs-lisp
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+#+END_SRC
+** Easy to remember keybinding
+In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<s-return>") 'ansi-term)
+#+END_SRC
 * Not used but usefull
 ** Diminishing modes
 Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
