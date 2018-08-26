@@ -47,7 +47,7 @@
 ;;(setq initial-scratch-message nil)                  ;;Not scratch message.
 ;;(tool-bar-mode -1)                                ;;Remove toolbar.
 ;;(scroll-bar-mode -1)                              ;;Remove scroll-bar.
-(desktop-save-mode 1)                             ;;Save session.
+;;(desktop-save-mode f)                             ;;Save session.
 (set-frame-parameter nil 'fullscreen 'fullboth)     ;;Make fullscreen.
 ;;(menu-bar-mode -1)                                ;;Hide menu.
 ;;(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y & n instead of yes & no
