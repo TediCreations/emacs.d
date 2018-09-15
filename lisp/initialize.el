@@ -30,6 +30,7 @@
 (add-to-list 'package-archives '("MELPA" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("MELPA Stable" .
 				 "http://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)                              ;;Initialize package.el
 ;;(package-refresh-contents)
@@ -67,7 +68,7 @@
 
 ;;------------------------------------------------------------------------------
 ;;Editor
-;;(global-linum-mode t)                             ;;Show line numbers left.
+(global-linum-mode t)                             ;;Show line numbers left.
 ;;(column-number-mode t)                            ;;Show the column number at
                                                   ;;  the powerline.
 (global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
