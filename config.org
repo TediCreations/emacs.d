@@ -75,6 +75,15 @@ Launces applications. Has its own cache for most launched applications.
     :bind
       ("s-SPC" . 'dmenu))
 #+END_SRC
+* Disable mouse
+Disable the mouse only inside emacs
+#+BEGIN_SRC emacs-lisp
+(use-package disable-mouse
+  :ensure t)
+(require 'disable-mouse)
+
+(global-disable-mouse-mode)
+#+END_SRC
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.

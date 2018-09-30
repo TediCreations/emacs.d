@@ -64,7 +64,7 @@
 ;;(setf auto-save-default nil)
 ;(setf auto-save-list-file-prefix (locate-user-emacs-file "local/saves"))
 ;(setf wdired-allow-to-change-permissions t)
-;;(setf echo-keystrokes 0.1)                        ;;Display keystrokes
+(setf echo-keystrokes 0.1)                        ;;Display keystrokes
                                                   ;;  immediately.
 ;;(setf delete-active-region nil)
 ;;(setf disabled-command-function nil)
