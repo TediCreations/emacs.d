@@ -25,6 +25,10 @@ This is annoying, remove this line if you like being visually reminded of events
 #+BEGIN_SRC emacs-lisp
 (setq ring-bell-function 'ignore)
 #+END_SRC
+*** Custom scratch message
+#+BEGIN_SRC emacs-lisp
+(setq initial-scratch-message nil)
+#+END_SRC
 *** Set UTF-8 encoding
 #+BEGIN_SRC emacs-lisp
   (setq locale-coding-system 'utf-8)
@@ -595,6 +599,14 @@ Here is how we add more of them!
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
     :ensure t)
+#+END_SRC
+*** Reveal.js
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-reveal
+      :ensure t)
+  (require 'ox-reveal)
+  (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-3.7.0/")
+  (setq org-reveal-title-slide nil)
 #+END_SRC
 * Not used but usefull
 ** Diminishing modes
