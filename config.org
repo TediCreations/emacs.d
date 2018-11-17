@@ -53,6 +53,17 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
         (global-pretty-mode t)))
 #+END_SRC
 ** Functionality
+*** Multiplexing emacs and emacsclient
+Opening a new file in the same emacs-session requires the use of emacsclient.
+The emacs command can be itself wrapped to do the smarter job to open the file
+if the session exists.
+To start session you need to start-server. This snippet will create server in
+first session of emacs. Add this to your emacs configuration file.
+#+BEGIN_SRC emacs-lisp
+(require 'server)
+(unless (server-running-p)
+    (server-start))
+#+END_SRC
 *** Disable backups and auto-saves
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil)
