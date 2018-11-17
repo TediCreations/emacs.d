@@ -104,7 +104,8 @@
 
 ;;------------------------------------------------------------------------------
 ;;Fonts
-(set-default-font "Source Code Pro-10" nil t)     ;;Default font
+(when (member "Source Code Pro" (font-family-list)) (set-frame-font "Source Code Pro-10" t t))
+;;(set-default-font "Source Code Pro-10" nil t)     ;;Default font
 (set-face-attribute 'default nil :height 100)     ;;Default font size %
 
 ;;------------------------------------------------------------------------------
