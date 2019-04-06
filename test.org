@@ -5,7 +5,6 @@
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 
-
 * OLD
 ** Initialize 1
 *** Workplace
@@ -137,7 +136,7 @@
 
 *** TODO Search
 THIS HAS WARNINGS
-+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package counsel                              ;;is a requirement for swiper
   :ensure t)
 
@@ -163,7 +162,7 @@ THIS HAS WARNINGS
     (global-set-key (kbd "C-x l") 'counsel-locate)
     (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
-+END_SRC
+#+END_SRC
 
 *** TODO Iedit
 THIS ISSUES WARNINGS
