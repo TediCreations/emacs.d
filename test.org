@@ -10,17 +10,6 @@
 #+BEGIN_SRC emacs-lisp
   (column-number-mode t)
 #+END_SRC
-** Whitespace mode
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c w") 'whitespace-mode)
-#+END_SRC
-** Show trailing whitespace when programming
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'prog-mode-hook
-            (lambda()
-              (interactive)
-              (setq show-trailing-whitespace 1)))
-#+END_SRC
 ** Make window 80 columns wide
 #+BEGIN_SRC emacs-lisp
   (defun set-window-width (n)
@@ -43,13 +32,6 @@
 * Navigation
 #+BEGIN_SRC emacs-lisp
   (winner-mode 1)                                   ;;Remember old configuration.
-  (windmove-default-keybindings)                    ;;Enables traversing througth
-                                                    ;;  windows with shift+arrows.
-  (use-package ace-window
-    :ensure t
-    :init
-    (progn
-      (global-set-key [remap-other-window] 'ace-window)))
 #+END_SRC
 * C/C++ IDE
 #+BEGIN_SRC emacs-lisp
@@ -61,7 +43,11 @@
 ;;(load "~/.emacs.d/lisp/tests" )
 ;;(require 'tedi-tests)
 #+END_SRC
-* Diminishing modes
+* To be evaluated
+** For org
+http://doc.norang.ca/org-mode.html
+** Ace-Window looks promising
+** Diminishing modes
 Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
 you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
 them running, it just prevents them from showing up and taking up space.
@@ -93,12 +79,9 @@ This is disabled for the time being...
     )
 #+END_SRC
 
-* CEDET
+** CEDET
 #+BEGIN_SRC emacs-lisp
   (global-ede-mode 1)
   (require 'semantic/sb)
   (semantic-mode 1)
 #+END_SRC
-* To be evaluated
-For org
-http://doc.norang.ca/org-mode.html

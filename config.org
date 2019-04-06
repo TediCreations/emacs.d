@@ -189,6 +189,10 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "RET") 'newline-and-indent)
 #+END_SRC
+*** Navigate throught buffers
+#+BEGIN_SRC emacs-lisp
+  (windmove-default-keybindings)
+#+END_SRC
 * Coding style
 ** Indentation is tabs
 #+BEGIN_SRC emacs-lisp

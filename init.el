@@ -11,5 +11,5 @@
 
 ;;------------------------------------------------------------------------------
 ;; This is the test config file. It is omitted if it doesn't exist so emacs won't refuse to launch.
-(when (file-readable-p "~/.emacs.d/test.org")
-  (org-babel-load-file (expand-file-name "~/.emacs.d/test.org")))
+;;(when (file-readable-p "~/.emacs.d/test.org")
+;;  (org-babel-load-file (expand-file-name "~/.emacs.d/test.org")))
