@@ -58,33 +58,59 @@ This changes the default location
 #+BEGIN_SRC emacs-lisp
 (setq load-prefer-newer t)
 #+END_SRC
-* Basic Interface Settings
+* Basic Settings
 These are setting that do not depend on packages and are built-in enhancements to the UI.
 ** Looks
 *** Remove default startup screen
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 #+END_SRC
 *** Remove toolbar
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
+  (tool-bar-mode -1)
 #+END_SRC
 *** Remove menubar
 #+BEGIN_SRC emacs-lisp
-(menu-bar-mode -1)
+  (menu-bar-mode -1)
 #+END_SRC
 *** Remove scrollbar
 #+BEGIN_SRC emacs-lisp
-(scroll-bar-mode -1)
+  (scroll-bar-mode -1)
+#+END_SRC
+*** Make fullscreen
+#+BEGIN_SRC emacs-lisp
+  (set-frame-parameter nil 'fullscreen 'fullboth)
+#+END_SRC
+*** Fonts
+#+BEGIN_SRC emacs-lisp
+  (when (member "Source Code Pro" (font-family-list)) (set-frame-font "Source Code Pro-10" t t))
+  (set-face-attribute 'default nil :height 100)     ;;Default font size %
+#+END_SRC
+*** Theme
+#+BEGIN_SRC emacs-lisp
+  (use-package monokai-theme
+    :ensure t
+    :config (load-theme 'monokai t))
+
+  ;;(use-package zenburn-theme
+  ;;  :ensure t
+  ;;  :config (load-theme 'zenburn t))
+
+  ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  ;;(load-theme 'tedi t)
+#+END_SRC
+*** Disable scratch message
+#+BEGIN_SRC emacs-lisp
+  (setq initial-scratch-message nil)
+#+END_SRC
+*** Do not blink cursor
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)
 #+END_SRC
 *** Disable bell
 This is annoying, remove this line if you like being visually reminded of events.
 #+BEGIN_SRC emacs-lisp
-(setq ring-bell-function 'ignore)
-#+END_SRC
-*** Custom scratch message
-#+BEGIN_SRC emacs-lisp
-(setq initial-scratch-message nil)
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 *** Set UTF-8 encoding
 #+BEGIN_SRC emacs-lisp
@@ -104,12 +130,26 @@ Besides, it's only used for programming.
 Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
 #+BEGIN_SRC emacs-lisp
   (when window-system
-        (use-package pretty-mode
-        :ensure t
-        :config
-        (global-pretty-mode t)))
+    (use-package pretty-mode
+      :ensure t
+      :config
+      (global-pretty-mode t)))
+#+END_SRC
+*** Visualize whitespace
+#+BEGIN_SRC emacs-lisp
+  (require 'whitespace)
+  (setq whitespace-style '(face empty tabs lines-tail trailing))
+  (global-whitespace-mode t)
 #+END_SRC
 ** Functionality
+*** Go to line
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-g") 'goto-line)
+#+END_SRC
+*** Kill buffer
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+END_SRC
 *** Multiplexing emacs and emacsclient
 Opening a new file in the same emacs-session requires the use of emacsclient.
 The emacs command can be itself wrapped to do the smarter job to open the file
@@ -138,8 +178,7 @@ Lets us use asynchronous processes wherever possible, pretty useful.
     :init (dired-async-mode 1))
 #+END_SRC
 
-* Window manager
-** dmenu
+* dmenu
 Launces applications. Has its own cache for most launched applications.
 #+BEGIN_SRC emacs-lisp
   (use-package dmenu

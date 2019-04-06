@@ -5,35 +5,13 @@
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 
-* OLD
-** Initialize 1
-*** Workplace
-#+BEGIN_SRC emacs-lisp
-  ;;(setq initial-scratch-message nil)                  ;;Not scratch message.
-  ;;(tool-bar-mode -1)                                ;;Remove toolbar.
-  ;;(scroll-bar-mode -1)                              ;;Remove scroll-bar.
-  ;;(desktop-save-mode f)                             ;;Save session.
-  (set-frame-parameter nil 'fullscreen 'fullboth)     ;;Make fullscreen.
-  ;;(menu-bar-mode -1)                                ;;Hide menu.
-  ;;(defalias 'yes-or-no-p 'y-or-n-p)                 ;;y & n instead of yes & no
-  ;;(setq auto-save-default nil)                        ;;Remove auto-save #...#
-  ;;(global-set-key (kbd "<f5>") 'menu-bar-mode)    ;;Toggle menu-bar ;;No need as
-                                                    ;;  f10 by default.
-  (global-set-key (kbd "M-g") 'goto-line)           ;;Got to line number.
-  (global-set-key (kbd "C-x k") 'kill-this-buffer)  ;;Kill buffer in window
-                                                    ;;  without asking y/n.
-
-  (blink-cursor-mode -1)                            ;;Do not blink cursor.
-  (prefer-coding-system 'utf-8-unix)                ;;Always use the one true
-                                                    ;;  encoding.
-#+END_SRC
-
-*** Editor
+* Initialize
+** Editor
 #+BEGIN_SRC emacs-lisp
   ;;------------------------------------------------------------------------------
   ;;Editor
   (global-linum-mode t)                             ;;Show line numbers left.
-  ;;(column-number-mode t)                            ;;Show the column number at
+  (column-number-mode t)                            ;;Show the column number at
                                                     ;;  the powerline.
   (global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
                                                     ;;  press RET.
@@ -45,8 +23,7 @@
               (interactive)
               (setq show-trailing-whitespace 1)))
 #+END_SRC
-
-*** Make window 80 columns wide
+** Make window 80 columns wide
 #+BEGIN_SRC emacs-lisp
   (defun set-window-width (n)
     "Set the selected window's width."
@@ -59,22 +36,7 @@
 
   (global-set-key (kbd "C-x `") 'set-80-columns)    ;;Make window 80 columns wide
 #+END_SRC
-
-*** Fonts
-#+BEGIN_SRC emacs-lisp
-  (when (member "Source Code Pro" (font-family-list)) (set-frame-font "Source Code Pro-10" t t))
-  ;;(set-default-font "Source Code Pro-10" nil t)
-  (set-face-attribute 'default nil :height 100)     ;;Default font size %
-#+END_SRC
-
-*** Visualize whitespace
-#+BEGIN_SRC emacs-lisp
-  (require 'whitespace)
-  (setq whitespace-style '(face empty tabs lines-tail trailing))
-  (global-whitespace-mode t)
-#+END_SRC
-
-*** C Coding style
+** C Coding style
 #+BEGIN_SRC emacs-lisp
   ;; Available C coding style:
   (setq-default indent-tabs-mode t)                 ;;Indentation is tabs
@@ -86,47 +48,7 @@
                                                     ;;  by 8 spaces.
 #+END_SRC
 
-*** Theme
-#+BEGIN_SRC emacs-lisp
-  (use-package monokai-theme
-    :ensure t
-    :config (load-theme 'monokai t))
-
-  ;;(use-package zenburn-theme
-  ;;  :ensure t
-  ;;  :config (load-theme 'zenburn t))
-
-  ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  ;;(load-theme 'tedi t)
-#+END_SRC
-
-*** Modeline
-#+BEGIN_SRC emacs-lisp
-  ;;Mode line theme
-  ;;(display-time-mode)                               ;;Show time in powerline.
-  ;;(use-package smart-mode-line
-  ;;  :ensure t)
-  ;;(require 'smart-mode-line)
-  ;;(setq powerline-arrow-shape 'curve)
-  ;;(setq powerline-default-separator-dir '(right . left))
-  ;;(setq sml/theme 'powerline)
-
-  ;;(setq sml/no-confirm-load-theme t)
-  ;;(setq sml/theme 'dark)
-  ;;(setq sml/mode-width 0)
-  ;;(setq sml/name-width 20)
-  ;;(rich-minority-mode 1)
-  ;;(setf rm-blacklist "")
-
-  ;;This was an error
-  ;;(use-package smart-mode-line-powerline
-  ;;  :ensure t)
-
-  ;;(sml/setup)
-#+END_SRC
-
-** Initialize 2
-*** Calculator
+** TODO Calculator
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-=") 'calc)
 (use-package calc
@@ -134,7 +56,7 @@
   :config (setf calc-display-trail nil)) ;;Do not let calculator display a window
 #+END_SRC
 
-*** Swiper
+** TODO Swiper
 #+BEGIN_SRC emacs-lisp
 (use-package counsel                              ;;is a requirement for swiper
   :ensure t)
@@ -163,7 +85,7 @@
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 #+END_SRC
 
-*** TODO Iedit
+** TODO Iedit
 Edit multiple regions simultaneously
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
@@ -174,21 +96,21 @@ Edit multiple regions simultaneously
   ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
 #+END_SRC
 
-*** Navigation
+** Navigation
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
   :bind ("M-s" . avy-goto-char))
 #+END_SRC
 
-*** Try packages
+** Try packages
 Let's you try packages without installing them
 #+BEGIN_SRC emacs-lisp
 (use-package try
   :ensure t)
 #+END_SRC
 
-*** Whick key
+** Which key
 Brings up help on key combinations
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
@@ -196,7 +118,7 @@ Brings up help on key combinations
   :config (which-key-mode))
 #+END_SRC
 
-*** REST
+** REST
 #+BEGIN_SRC emacs-lisp
 ;;------------------------------------------------------------------------------
 ;;Windows
@@ -220,13 +142,13 @@ Brings up help on key combinations
                                                   ;;  'all buffer list'.
 #+END_SRC
 
-** C/C++ IDE
+* C/C++ IDE
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/c_cpp_ide" )
 ;;(require 'tedi-c_cpp_ide)
 #+END_SRC
 
-** Tests
+* Tests
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/tests" )
 ;;(require 'tedi-tests)
