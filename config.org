@@ -122,7 +122,7 @@ This makes sure that everything can be a project.
   (use-package projectile
     :ensure t
     :init
-      (projectile-mode 1))
+    (projectile-mode 1))
 #+END_SRC
 ** Let projectile call make
 #+BEGIN_SRC emacs-lisp
@@ -367,7 +367,7 @@ This goes without saying but you can replace bash with your shell of choice.
 ** Easy to remember keybinding
 In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<s-return>") 'ansi-term)
+  (global-set-key (kbd "<s-return>") 'ansi-term)
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
@@ -576,6 +576,10 @@ academic papers, presentations, schedules, blogposts and guides.
 Org-mode is one of the most complex things ever, lets make it a bit more usable with some basic configuration.
 
 Those are all rather self-explanatory.
+** Fix bugs
+#+BEGIN_SRC emacs-lisp
+  (define-obsolete-function-alias 'org-define-error 'define-error)
+#+END_SRC
 ** Common settings
 
 #+BEGIN_SRC emacs-lisp
@@ -597,8 +601,8 @@ Those are all rather self-explanatory.
 ** Line wrapping
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook
-	    '(lambda ()
-	       (visual-line-mode 1)))
+            '(lambda ()
+               (visual-line-mode 1)))
 #+END_SRC
 
 ** Keybindings
@@ -612,14 +616,14 @@ Makes it all look a bit nicer, I hate looking at asterisks.
   (use-package org-bullets
     :ensure t
     :config
-      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
 
 ** Easy-to-add emacs-lisp template
 Hitting tab after an "<el" in an org-mode file will create a template for elisp insertion.
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist
-	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 #+END_SRC
 
 ** Exporting options
@@ -628,9 +632,8 @@ Here is how we add more of them!
 *** Hugo
 #+BEGIN_SRC emacs-lisp
   (use-package ox-hugo
-    :ensure t     ;Auto-install the package from Melpa (optional)
+    :ensure t            ;Auto-install the package from Melpa (optional)
     :after ox)
-  (use-package ox-hugo-auto-export) ;If you want the auto-exporting on file saves
 #+END_SRC
 
 *** latex
@@ -649,12 +652,11 @@ Here is how we add more of them!
 *** Reveal.js
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal
-      :ensure t)
+    :ensure t)
   (require 'ox-reveal)
   (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-3.7.0/")
   (setq org-reveal-title-slide nil)
 #+END_SRC
-
 * To be evaluated
 ** URLS
 *** For org
