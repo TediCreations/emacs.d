@@ -77,6 +77,10 @@ These are setting that do not depend on packages and are built-in enhancements t
 #+BEGIN_SRC emacs-lisp
   (scroll-bar-mode -1)
 #+END_SRC
+*** Show line numbers
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode t)
+#+END_SRC
 *** Make fullscreen
 #+BEGIN_SRC emacs-lisp
   (set-frame-parameter nil 'fullscreen 'fullboth)
@@ -141,6 +145,10 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
   (setq whitespace-style '(face empty tabs lines-tail trailing))
   (global-whitespace-mode t)
 #+END_SRC
+*** Change the name of 'list-buffers'
+#+BEGIN_SRC emacs-lisp
+  (defalias 'list-buffers 'ibuffer)
+#+END_SRC
 ** Functionality
 *** Go to line
 #+BEGIN_SRC emacs-lisp
@@ -177,7 +185,19 @@ Lets us use asynchronous processes wherever possible, pretty useful.
     :ensure t
     :init (dired-async-mode 1))
 #+END_SRC
-
+*** Automatically indent when pressing RET
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "RET") 'newline-and-indent)
+#+END_SRC
+* Coding style
+** Indentation is tabs
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode t)
+#+END_SRC
+** Tab is 8 spaces
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 8)
+#+END_SRC
 * dmenu
 Launces applications. Has its own cache for most launched applications.
 #+BEGIN_SRC emacs-lisp

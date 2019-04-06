@@ -5,19 +5,17 @@
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 
-* Initialize
-** Editor
+* Editor
+** Show column number at the powerline
 #+BEGIN_SRC emacs-lisp
-  ;;------------------------------------------------------------------------------
-  ;;Editor
-  ;;(global-linum-mode t)                             ;;Show line numbers left.
-  ;;(column-number-mode t)                            ;;Show the column number at
-                                                    ;;  the powerline.
-  (global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
-                                                    ;;  press RET.
-  (global-set-key (kbd "C-c w") 'whitespace-mode)   ;;View all whitespace chars.
-
-  ;;Show unncessary whitespace that can mess up your diff
+  (column-number-mode t)
+#+END_SRC
+** Whitespace mode
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c w") 'whitespace-mode)
+#+END_SRC
+** Show trailing whitespace when programming
+#+BEGIN_SRC emacs-lisp
   (add-hook 'prog-mode-hook
             (lambda()
               (interactive)
@@ -36,56 +34,34 @@
 
   (global-set-key (kbd "C-x `") 'set-80-columns)    ;;Make window 80 columns wide
 #+END_SRC
-** C Coding style
+* Coding style
+** C default style
 #+BEGIN_SRC emacs-lisp
-  ;; Available C coding style:
-  (setq-default indent-tabs-mode t)                 ;;Indentation is tabs
-  (setq-default tab-width 8)                        ;;Tab is represented by
-                                                    ;;  8 spaces.
-
-  (setq c-default-style "linux"                     ;;Coding style of linux
-        c-basic-offset 8)                           ;;Change indentation of tab
-                                                    ;;  by 8 spaces.
+  (setq c-default-style "linux" ;;Coding style of linux
+        c-basic-offset 8)       ;;Change indentation of tab by 8 spaces.
 #+END_SRC
-** REST
+* Navigation
 #+BEGIN_SRC emacs-lisp
-;;------------------------------------------------------------------------------
-;;Windows
-(winner-mode 1)                                   ;;Remember old configuration.
-(windmove-default-keybindings)                    ;;Enables traversing througth
-                                                  ;;  windows with shift+arrows.
-(use-package ace-window
-  :ensure t
-  :init
-  (progn
-    (global-set-key [remap-other-window] 'ace-window)))
-
-;;------------------------------------------------------------------------------
-;;Buffers
-;; using swiper so ido no longer needed
-;;(setq ido-enable-flex-matching t)
-;;(setq ido-everywhere t)
-;;(ido-mode 1)
-
-(defalias 'list-buffers 'ibuffer)                 ;;Change the name of the
-                                                  ;;  'all buffer list'.
+  (winner-mode 1)                                   ;;Remember old configuration.
+  (windmove-default-keybindings)                    ;;Enables traversing througth
+                                                    ;;  windows with shift+arrows.
+  (use-package ace-window
+    :ensure t
+    :init
+    (progn
+      (global-set-key [remap-other-window] 'ace-window)))
 #+END_SRC
 * C/C++ IDE
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/c_cpp_ide" )
 ;;(require 'tedi-c_cpp_ide)
 #+END_SRC
-
 * Tests
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/tests" )
 ;;(require 'tedi-tests)
 #+END_SRC
-* To be evaluated
-** URLS
-*** For org
-http://doc.norang.ca/org-mode.html
-** Diminishing modes
+* Diminishing modes
 Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
 you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
 them running, it just prevents them from showing up and taking up space.
@@ -117,9 +93,12 @@ This is disabled for the time being...
     )
 #+END_SRC
 
-** CEDET
+* CEDET
 #+BEGIN_SRC emacs-lisp
   (global-ede-mode 1)
   (require 'semantic/sb)
   (semantic-mode 1)
 #+END_SRC
+* To be evaluated
+For org
+http://doc.norang.ca/org-mode.html
