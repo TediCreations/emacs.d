@@ -10,8 +10,8 @@
 #+BEGIN_SRC emacs-lisp
   ;;------------------------------------------------------------------------------
   ;;Editor
-  (global-linum-mode t)                             ;;Show line numbers left.
-  (column-number-mode t)                            ;;Show the column number at
+  ;;(global-linum-mode t)                             ;;Show line numbers left.
+  ;;(column-number-mode t)                            ;;Show the column number at
                                                     ;;  the powerline.
   (global-set-key (kbd "RET") 'newline-and-indent)  ;;Automatically indent when
                                                     ;;  press RET.
@@ -47,77 +47,6 @@
         c-basic-offset 8)                           ;;Change indentation of tab
                                                     ;;  by 8 spaces.
 #+END_SRC
-
-** TODO Calculator
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-=") 'calc)
-(use-package calc
-  :defer t
-  :config (setf calc-display-trail nil)) ;;Do not let calculator display a window
-#+END_SRC
-
-** TODO Swiper
-#+BEGIN_SRC emacs-lisp
-(use-package counsel                              ;;is a requirement for swiper
-  :ensure t)
-
-(use-package swiper                               ;;Makes search easier
-  :ensure try
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    (global-set-key (kbd "<f6>") 'ivy-resume)
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> l") 'counsel-load-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c k") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
-#+END_SRC
-
-** TODO Iedit
-Edit multiple regions simultaneously
-#+BEGIN_SRC emacs-lisp
-  (use-package iedit
-    :ensure t)
-  (require 'iedit)
-
-  ;;This is a bug in Mac but in linux works.(I do not need a fix)
-  ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
-#+END_SRC
-
-** Navigation
-#+BEGIN_SRC emacs-lisp
-(use-package avy
-  :ensure t
-  :bind ("M-s" . avy-goto-char))
-#+END_SRC
-
-** Try packages
-Let's you try packages without installing them
-#+BEGIN_SRC emacs-lisp
-(use-package try
-  :ensure t)
-#+END_SRC
-
-** Which key
-Brings up help on key combinations
-#+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :ensure t
-  :config (which-key-mode))
-#+END_SRC
-
 ** REST
 #+BEGIN_SRC emacs-lisp
 ;;------------------------------------------------------------------------------
@@ -141,7 +70,6 @@ Brings up help on key combinations
 (defalias 'list-buffers 'ibuffer)                 ;;Change the name of the
                                                   ;;  'all buffer list'.
 #+END_SRC
-
 * C/C++ IDE
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/c_cpp_ide" )
@@ -152,4 +80,46 @@ Brings up help on key combinations
 #+BEGIN_SRC emacs-lisp
 ;;(load "~/.emacs.d/lisp/tests" )
 ;;(require 'tedi-tests)
+#+END_SRC
+* To be evaluated
+** URLS
+*** For org
+http://doc.norang.ca/org-mode.html
+** Diminishing modes
+Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
+you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
+them running, it just prevents them from showing up and taking up space.
+
+*THIS WILL BE REMOVED SOON AS USE-PACKAGE HAS THE FUNCTIONALITY BUILT IN*
+
+Edit this list as you see fit!
+
+This is disabled for the time being...
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'which-key-mode)
+    (diminish 'linum-relative-mode)
+    (diminish 'hungry-delete-mode)
+    (diminish 'visual-line-mode)
+    (diminish 'subword-mode)
+    (diminish 'beacon-mode)
+    (diminish 'irony-mode)
+    (diminish 'page-break-lines-mode)
+    (diminish 'auto-revert-mode)
+    (diminish 'rainbow-delimiters-mode)
+    (diminish 'rainbow-mode)
+    (diminish 'ivy-mode)
+    (diminish 'projectile-mode)
+    (diminish 'global-whitespace-mode)
+    (diminish 'org-indent-mode)
+    )
+#+END_SRC
+
+** CEDET
+#+BEGIN_SRC emacs-lisp
+  (global-ede-mode 1)
+  (require 'semantic/sb)
+  (semantic-mode 1)
 #+END_SRC
