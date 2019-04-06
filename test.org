@@ -134,8 +134,7 @@
   :config (setf calc-display-trail nil)) ;;Do not let calculator display a window
 #+END_SRC
 
-*** TODO Search
-THIS HAS WARNINGS
+*** Swiper
 #+BEGIN_SRC emacs-lisp
 (use-package counsel                              ;;is a requirement for swiper
   :ensure t)
@@ -165,17 +164,15 @@ THIS HAS WARNINGS
 #+END_SRC
 
 *** TODO Iedit
-THIS ISSUES WARNINGS
-+BEGIN_SRC emacs-lisp
-;;------------------------------------------------------------------------------
-;;Iedit - Edit multiple regions simultaneously
-(use-package iedit
-  :ensure t)
-(require 'iedit)
+Edit multiple regions simultaneously
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
+    :ensure t)
+  (require 'iedit)
 
-;;This is a bug in Mac but in linux works.(I do not need a fix)
-;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
-+END_SRC
+  ;;This is a bug in Mac but in linux works.(I do not need a fix)
+  ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
+#+END_SRC
 
 *** Navigation
 #+BEGIN_SRC emacs-lisp
