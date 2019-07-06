@@ -194,6 +194,11 @@ Lets us use asynchronous processes wherever possible, pretty useful.
   (windmove-default-keybindings)
 #+END_SRC
 * Coding style
+** C/C++ style
+#+BEGIN_SRC emacs-lisp
+  (setq c-default-style "linux"
+        c-basic-offset 4)
+#+END_SRC
 ** Indentation is tabs
 #+BEGIN_SRC emacs-lisp
   (setq-default indent-tabs-mode t)
