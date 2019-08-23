@@ -484,6 +484,12 @@ In loving memory of bspwm, Super + Enter opens a new terminal, old habits die ha
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
+** Compiling
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-hook
+            (lambda ()
+            (local-set-key (kbd [f5]) 'recompile)
+#+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
     (use-package yasnippet
