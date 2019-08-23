@@ -6,6 +6,7 @@ recentf
 ac-comphist.dat
 .emacs.desktop
 .emacs.desktop.lock
+eshell
 
 # Generated files
 custom.el

@@ -10,5 +10,6 @@ rm -rf ede-projects.el
 rm -rf projectile-bookmarks.eld
 rm -rf auto-save-list
 rm -rf semanticdb
+rm -rf eshell
 
 echo "Emacs directory is clean"
