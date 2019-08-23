@@ -484,6 +484,39 @@ In loving memory of bspwm, Super + Enter opens a new terminal, old habits die ha
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
+** Helm-Gtags
+#+BEGIN_SRC emacs-lisp
+(use-package helm-gtags
+  :ensure t
+)
+
+;; Enable helm-gtags-mode
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+(add-hook 'python-mode-hook 'helm-gtags-mode)
+
+;; customize
+(custom-set-variables
+  '(helm-gtags-path-style 'relative)
+  '(helm-gtags-ignore-case t)
+  '(helm-gtags-auto-update t))
+
+;; key bindings
+(with-eval-after-load 'helm-gtags
+  (define-key helm-gtags-mode-map (kbd "M-.")   'helm-gtags-dwim)
+  (define-key helm-gtags-mode-map (kbd "M-,")   'helm-gtags-pop-stack)
+
+  (define-key helm-gtags-mode-map (kbd "M-t")   'helm-gtags-find-tag)
+  (define-key helm-gtags-mode-map (kbd "M-r")   'helm-gtags-find-rtag)
+  (define-key helm-gtags-mode-map (kbd "M-s")   'helm-gtags-find-symbol)
+  (define-key helm-gtags-mode-map (kbd "M-p")   'helm-gtags-parse-file)
+
+  (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+  (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+)
+#+END_SRC
+
 ** Compiling
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-hook
