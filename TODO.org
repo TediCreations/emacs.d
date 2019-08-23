@@ -1,0 +1,2 @@
+* Useful emacs dotfiles
+  - https://github.com/yusekiya/dotfiles/tree/master/.emacs.d
