@@ -19,6 +19,7 @@ dmenu-items
 # Folders
 auto-save-list
 elpa
+packages
 semanticdb
 .cache
 

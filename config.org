@@ -6,9 +6,21 @@
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 [[./img/screen.png]]
 
-* Initialize
-** Garbage collection at startup
-This fixed garbage collection, makes emacs start up faster
+* Environment variables
+#+BEGIN_SRC emacs-lisp
+  (setq tedi-org-directory "~/org/")
+#+END_SRC
+* Visit notes
+ #+BEGIN_SRC emacs-lisp
+   (defun tedi:notes-visit ()
+     "Visits the emacs config file"
+     (interactive)
+     (find-file (concat tedi-org-directory "notes.org")))
+   (global-set-key (kbd "C-c n") 'tedi:notes-visit)
+ #+END_SRC
+* Startup
+** Garbage collection
+   This fixed garbage collection, makes emacs start up faster.
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 402653184 gc-cons-percentage 0.6)
 
@@ -24,39 +36,72 @@ This fixed garbage collection, makes emacs start up faster
   (add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
   (add-hook 'emacs-startup-hook 'startup/reset-gc)
 #+END_SRC
-
+** Customization file
+   This save customizations somewhere other than the initialization file.
+#+BEGIN_SRC emacs-lisp
+   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+   (when (file-exists-p custom-file)
+   (load custom-file))
+#+END_SRC
 ** Package manager
 #+BEGIN_SRC emacs-lisp
-  ;; This must come before configurations of installed packages.
-  (package-initialize)
-  (setq package-enable-at-startup nil)
+  (eval-and-compile
+    (setq load-prefer-newer t
+          package-user-dir (concat user-emacs-directory "packages")
+          package--init-file-ensured t
+          package-enable-at-startup nil)
 
-  (require 'package)
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-  (add-to-list 'package-archives '("MELPA" . "https://melpa.org/packages/") t)
-  (add-to-list 'package-archives '("MELPA Stable" . "http://stable.melpa.org/packages/") t)
+    (unless (file-directory-p package-user-dir)
+      (make-directory package-user-dir t))
+    )
 
-  ;;(package-refresh-contents)
+  (eval-and-compile
+    (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
+
+  (eval-when-compile
+    (require 'package)
+    (package-initialize)
+    (add-to-list 'package-archives '("gnu"          . "https://elpa.gnu.org/packages/") t)
+    (add-to-list 'package-archives '("melpa"        . "https://melpa.org/packages/") t)
+    (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+    (add-to-list 'package-archives '("org"          . "http://orgmode.org/elpa/") t)
+
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package)
+      (package-install 'diminish)
+      (package-install 'quelpa)
+      (package-install 'bind-key)
+      )
+
+    (setq use-package-always-ensure t)
+    (setq use-package-expand-minimally t)
+
+    (require 'use-package)
+    )
+
+  (require 'diminish)
+  (require 'bind-key)
 #+END_SRC
-
-** Custom generated configurations
-This changes the default location
+* Configuration
+** Visiting the configuration
+   Quickly visit the configuration file.
 #+BEGIN_SRC emacs-lisp
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (when (file-exists-p custom-file)
-    (load custom-file))
+  (defun tedi:config-visit ()
+    "Visits the emacs config file"
+    (interactive)
+    (find-file (concat user-emacs-directory "config.org")))
+  (global-set-key (kbd "C-c e") 'tedi:config-visit)
 #+END_SRC
-
-** Packages
-*** Use package
+** Reloading the configuration
+   Quickly reloads the configuration file.
 #+BEGIN_SRC emacs-lisp
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-#+END_SRC
-** Bug fix
-#+BEGIN_SRC emacs-lisp
-(setq load-prefer-newer t)
+  (defun tedi:config-reload ()
+    "Reloads the configuration file"
+    (interactive)
+    (org-babel-load-file (concat user-emacs-directory "config.org"))
+    )
+  (global-set-key (kbd "C-c r") 'tedi:config-reload)
 #+END_SRC
 * Basic Settings
 These are setting that do not depend on packages and are built-in enhancements to the UI.
@@ -207,25 +252,64 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+BEGIN_SRC emacs-lisp
   (setq-default tab-width 8)
 #+END_SRC
-* dmenu
-Launces applications. Has its own cache for most launched applications.
+* Packages
+** Yasnippet
 #+BEGIN_SRC emacs-lisp
-  (use-package dmenu
+  (use-package yasnippet
     :ensure t
-    :bind
-      ("s-SPC" . 'dmenu))
+    :config
+    (use-package yasnippet-snippets
+      :ensure t)
+    (yas-reload-all))
 #+END_SRC
-
-* Disable mouse
-Disable the mouse only inside emacs
+** Dashboard
 #+BEGIN_SRC emacs-lisp
-(use-package disable-mouse
-  :ensure t)
-(require 'disable-mouse)
-
-(global-disable-mouse-mode)
+  (defun tedi:test ()
+    (interactive)
+    (if (version< "25.3" emacs-version)
+        (progn
+          ;; Dashboard need emacs 25.3
+          (use-package dashboard
+            :ensure t
+            :config
+            (dashboard-setup-startup-hook)
+            (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+            (setq dashboard-items '((recents  . 5)
+                                    (projects . 5)))
+            (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code."))
+          )
+      )
+    )
 #+END_SRC
-
+** Disable mouse
+Disable the mouse only inside emacs. This is usefull in a laptop and as an exercise to not use the mouse at all.
+#+BEGIN_SRC emacs-lisp
+  (use-package disable-mouse
+    :ensure t)
+  (global-disable-mouse-mode)
+#+END_SRC
+** Which key
+Brings up help on key combinations.
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode))
+#+END_SRC
+** Try
+Let's you try packages without installing them.
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t)
+#+END_SRC
+** nwim
+Smart move when you browse in code.
+#+BEGIN_SRC emacs-lisp
+  (use-package mwim
+    :bind
+    ("C-a" . mwim-beginning-of-code-or-line)
+    ("C-e" . mwim-end-of-code-or-line))
+#+END_SRC
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
@@ -240,21 +324,6 @@ This makes sure that everything can be a project.
 ** Let projectile call make
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "<f5>") 'projectile-compile-project)
-#+END_SRC
-* Dashboard
-This is your new startup screen, together with projectile it works in unison and
-provides you with a quick look into your latest projects and files.
-Change the welcome message to whatever string you want and
-change the numbers to suit your liking, I find 5 to be enough.
-#+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :config
-      (dashboard-setup-startup-hook)
-      (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-      (setq dashboard-items '((recents  . 5)
-                              (projects . 5)))
-      (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code."))
 #+END_SRC
 * Modeline
 The modeline is the heart of emacs, it offers information at all times, it's persistent
@@ -282,15 +351,10 @@ This enables spaceline, it looks better and works very well with my theme of cho
       (setq powerline-default-separator (quote arrow))
       (spaceline-spacemacs-theme))
 #+END_SRC
-
-#+RESULTS:
-: t
-
 ** No separator!
 #+BEGIN_SRC emacs-lisp
   (setq powerline-default-separator nil)
 #+END_SRC
-
 ** Cursor position
 Show the current line and column for your cursor.
 We are not going to have =relative-linum-mode= in every major mode, so this is useful.
@@ -339,24 +403,6 @@ symon can be toggled on and off with =Super + h=.
 Emacs is at it's best when it just does things for you, shows you the way, guides you so to speak.
 This can be best achieved using a number of small extensions. While on their own they might not be particularly
 impressive. Together they create a nice environment for you to work in.
-** Visiting the configuration
-Quickly edit =~/.emacs.d/config.org=
-#+BEGIN_SRC emacs-lisp
-  (defun config-visit ()
-    (interactive)
-    (find-file "~/.emacs.d/config.org"))
-  (global-set-key (kbd "C-c e") 'config-visit)
-#+END_SRC
-** Reloading the configuration
-Simply pressing =Control-c r= will reload this file, very handy.
-You can also manually invoke =config-reload=.
-#+BEGIN_SRC emacs-lisp
-  (defun config-reload ()
-    "Reloads ~/.emacs.d/config.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-c r") 'config-reload)
-#+END_SRC
 ** Subwords
 Emacs treats camelCase strings as a single word by default, this changes said behaviour.
 #+BEGIN_SRC emacs-lisp
@@ -462,7 +508,6 @@ C-n and C-p totally work for this.
 #+BEGIN_SRC emacs-lisp
   (setq tramp-default-method "ssh")
 #+END_SRC
-
 * The terminal
 I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
 ** Default shell should be bash
@@ -475,7 +520,6 @@ This goes without saying but you can replace bash with your shell of choice.
     (interactive (list my-term-shell)))
   (ad-activate 'ansi-term)
 #+END_SRC
-
 ** Easy to remember keybinding
 In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
 #+BEGIN_SRC emacs-lisp
@@ -485,37 +529,37 @@ In loving memory of bspwm, Super + Enter opens a new terminal, old habits die ha
 Minor, non-completion related settings and plugins for writing code.
 ** Helm-Gtags
 #+BEGIN_SRC emacs-lisp
-(use-package helm-gtags
-  :ensure t
-)
+  (use-package helm-gtags
+    :ensure t
+    )
 
-;; Enable helm-gtags-mode
-(add-hook 'c-mode-hook 'helm-gtags-mode)
-(add-hook 'c++-mode-hook 'helm-gtags-mode)
-(add-hook 'asm-mode-hook 'helm-gtags-mode)
-(add-hook 'python-mode-hook 'helm-gtags-mode)
+  ;; Enable helm-gtags-mode
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  (add-hook 'python-mode-hook 'helm-gtags-mode)
 
-;; customize
-(custom-set-variables
-  '(helm-gtags-path-style 'relative)
-  '(helm-gtags-ignore-case t)
-  '(helm-gtags-auto-update t))
+  ;; customize
+  (custom-set-variables
+   '(helm-gtags-path-style 'relative)
+   '(helm-gtags-ignore-case t)
+   '(helm-gtags-auto-update t))
 
-;; key bindings
-(with-eval-after-load 'helm-gtags
-  (define-key helm-gtags-mode-map (kbd "M-.")   'helm-gtags-dwim)
-  (define-key helm-gtags-mode-map (kbd "M-,")   'helm-gtags-pop-stack)
+  ;; key bindings
+  (with-eval-after-load 'helm-gtags
+    (define-key helm-gtags-mode-map (kbd "M-.")   'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "M-,")   'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "M-u")   'helm-gtags-update-tags)
 
-  (define-key helm-gtags-mode-map (kbd "M-t")   'helm-gtags-find-tag)
-  (define-key helm-gtags-mode-map (kbd "M-r")   'helm-gtags-find-rtag)
-  (define-key helm-gtags-mode-map (kbd "M-s")   'helm-gtags-find-symbol)
-  (define-key helm-gtags-mode-map (kbd "M-p")   'helm-gtags-parse-file)
+    (define-key helm-gtags-mode-map (kbd "M-t")   'helm-gtags-find-tag)
+    (define-key helm-gtags-mode-map (kbd "M-r")   'helm-gtags-find-rtag)
+    (define-key helm-gtags-mode-map (kbd "M-s")   'helm-gtags-find-symbol)
+    (define-key helm-gtags-mode-map (kbd "M-p")   'helm-gtags-parse-file)
 
-  (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-  (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
-)
+    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+    )
 #+END_SRC
-
 ** Compiling
 #+BEGIN_SRC emacs-lisp
 (define-key global-map (kbd "C-,") 'compile)
@@ -523,20 +567,18 @@ Minor, non-completion related settings and plugins for writing code.
 #+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :config
-        (use-package yasnippet-snippets
-          :ensure t)
-        (yas-reload-all))
+  (use-package yasnippet
+    :ensure t
+    :config
+    (use-package yasnippet-snippets
+      :ensure t)
+    (yas-reload-all))
 #+END_SRC
-
 ** flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :ensure t)
 #+END_SRC
-
 ** company mode
 I set the delay for company mode to kick in to half a second, I also make sure that
 it starts doing its magic after typing in only 2 characters.
@@ -556,7 +598,6 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     (define-key company-active-map (kbd "SPC") #'company-abort))
 #+END_SRC
-
 ** specific languages
 Be it for code or prose, completion is a must.
 After messing around with =auto-completion= for a while I decided to drop it
@@ -782,10 +823,9 @@ Here is how we add more of them!
 *** Hugo
 #+BEGIN_SRC emacs-lisp
   (use-package ox-hugo
-    :ensure t            ;Auto-install the package from Melpa (optional)
+    :ensure t
     :after ox)
 #+END_SRC
-
 *** latex
 #+BEGIN_SRC emacs-lisp
   (when (file-directory-p "/usr/share/emacs/site-lisp/tex-utils")
@@ -806,13 +846,6 @@ Here is how we add more of them!
   (require 'ox-reveal)
   (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-3.7.0/")
   (setq org-reveal-title-slide nil)
-#+END_SRC
-* Calculator
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-=") 'calc)
-  (use-package calc
-    :defer t
-    :config (setf calc-display-trail nil)) ;;Do not let calculator display a window
 #+END_SRC
 * Swiper
 Counsel is a requirement for swiper. Swiper makes search easier.
@@ -858,17 +891,4 @@ Navigation to any place inside the window
   (use-package avy
     :ensure t
     :bind ("M-s" . avy-goto-char))
-#+END_SRC
-* Try packages
-Let's you try packages without installing them
-#+BEGIN_SRC emacs-lisp
-  (use-package try
-    :ensure t)
-#+END_SRC
-* Which key
-Brings up help on key combinations
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t
-    :config (which-key-mode))
 #+END_SRC
