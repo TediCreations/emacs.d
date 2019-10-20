@@ -375,7 +375,7 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 #+BEGIN_SRC emacs-lisp
   (defun tedi:test ()
     (interactive)
-    (if (version< "25.3" emacs-version)
+    (if (version< emacs-version "25.3")
         (progn
           ;; Dashboard need emacs 25.3
           (use-package dashboard
