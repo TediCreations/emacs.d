@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: hugo_post
+# key: hugo_post
+# --
+
+#+hugo_base_dir: ../../
+#+hugo_section: posts
+
+#+title: "$1"
+#+author: Kanelis Elias
+#+date: `(format-time-string "%Y-%m-%d")`
+
+#+hugo_tags: $2
+#+hugo_categories: $3
+
+#+hugo_weight: 2001
+#+hugo_draft: false
+#+hugo_auto_set_lastmod: t
+#+hugo_custom_front_matter:
+
+* $0

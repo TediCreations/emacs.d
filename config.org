@@ -715,7 +715,6 @@ After messing around with =auto-completion= for a while I decided to drop it
 in favor of =company=, and it turns out to have been a great decision.
 
 Each category also has additional settings.
-
 *** c/c++
 **** yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -930,6 +929,9 @@ Hitting tab after an "<el" in an org-mode file will create a template for elisp 
                  )
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'yas-minor-mode)
+#+END_SRC
 ** Exporting options
 One of the best things about org is the ability to export your file to many formats.
 Here is how we add more of them!
