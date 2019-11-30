@@ -329,7 +329,14 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
   (defun tedi:gud-toggle-breakpoint ()
     "Enable/disable breakpoint at the current line of source buffer."
     (interactive)
-    )
+    (save-excursion
+      (beginning-of-line)
+      (let* ((bol (point))
+             (ovl (overlay-get (car (overlays-in bol bol)) 'before-string))
+             (bptno (get-text-property 0 'gdb-bptno ovl))
+             (bpten (get-text-property 0 'gdb-enabled ovl)))
+        (if bpten (gud-basic-call (format "-break-disable %s" bptno))
+          (gud-basic-call (format "-break-enable %s" bptno))))))
 
   (add-hook 'prog-mode-hook
             (lambda ()
@@ -342,8 +349,8 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
               (local-set-key [f6]    'gud-step)
               (local-set-key [f7]    'gud-until)
               (local-set-key [f8]    'gud-cont)
-              ;;(local-set-key [f9]    'tedi:gud-toggle-breakpoint)
-              (local-set-key [f9]    'gud-break)
+              (local-set-key [f9]    'tedi:gud-toggle-breakpoint)
+              ;;(local-set-key [f9]    'gud-break)
               )
             )
 #+END_SRC
