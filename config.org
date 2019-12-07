@@ -260,6 +260,10 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+BEGIN_SRC emacs-lisp
   (windmove-default-keybindings)
 #+END_SRC
+*** Blindly follow symlinks without asking me
+#+BEGIN_SRC emacs-lisp
+(setq vc-follow-symlinks nil)
+#+END_SRC
 * GDB
 ** Debugging environment
 #+BEGIN_SRC emacs-lisp
