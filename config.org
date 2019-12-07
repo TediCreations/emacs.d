@@ -355,10 +355,10 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
             )
 #+END_SRC
 * Coding style
-** C/C++ style
+** C/C++ style is bsd( Allman )
 #+BEGIN_SRC emacs-lisp
-  (setq c-default-style "linux"
-        c-basic-offset 4)
+  (setq c-default-style "bsd"
+        c-basic-offset 8)
 #+END_SRC
 ** Indentation is tabs
 #+BEGIN_SRC emacs-lisp
@@ -367,6 +367,34 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 ** Tab is 8 spaces
 #+BEGIN_SRC emacs-lisp
   (setq-default tab-width 8)
+#+END_SRC
+* Indent
+Indent this buffer
+#+BEGIN_SRC emacs-lisp
+  (defun tedi:indent-c-buffer ()
+    "Use astyle command to auto format c/c++ code."
+    (interactive "r")
+    (if (executable-find "astyle")
+      (progn
+        (setq cursorPosition (point))
+        (shell-command-on-region
+         (point-min) (point-max)
+         (concat
+          "astyle")
+         (current-buffer) t
+         (get-buffer-create "*Astyle Errors*") t)
+        (goto-char cursorPosition))
+      (message "Cannot find binary \"astyle\", please install first.")))
+#+END_SRC
+Indent buffer before save
+#+BEGIN_SRC emacs-lisp
+(defun tedi:indent-before-save ()
+    "Auto styling before saving."
+    (interactive)
+    (when (member major-mode '(cc-mode c++-mode c-mode))
+      (tedi:indent-c-buffer)))
+
+(add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
 #+END_SRC
 * Packages
 ** Yasnippet
