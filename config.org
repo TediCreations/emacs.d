@@ -187,7 +187,13 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
 *** Visualize whitespace
 #+BEGIN_SRC emacs-lisp
   (require 'whitespace)
-  (setq whitespace-style '(face empty tabs lines-tail trailing))
+
+  (setq whitespace-style '(face empty tabs tab-mark lines-tail trailing))
+
+  ;;Visualize tabs as a pipe character - "|"
+  (custom-set-faces '(whitespace-tab ((t (:foreground "#636363")))))
+  (setq whitespace-display-mappings '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+
   (global-whitespace-mode t)
 #+END_SRC
 *** Change the name of 'list-buffers'
@@ -249,10 +255,6 @@ Lets us use asynchronous processes wherever possible, pretty useful.
   (use-package async
     :ensure t
     :init (dired-async-mode 1))
-#+END_SRC
-*** Automatically indent when pressing RET
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "RET") 'newline-and-indent)
 #+END_SRC
 *** Navigate throught buffers
 #+BEGIN_SRC emacs-lisp
@@ -368,8 +370,12 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 #+BEGIN_SRC emacs-lisp
   (setq-default tab-width 8)
 #+END_SRC
-* Indent
-Indent this buffer
+* Indentation
+** Automatically indent when pressing RET
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "RET") 'newline-and-indent)
+#+END_SRC
+** Indent this buffer
 #+BEGIN_SRC emacs-lisp
   (defun tedi:indent-c-buffer ()
     "Use astyle command to auto format c/c++ code."
@@ -386,7 +392,7 @@ Indent this buffer
         (goto-char cursorPosition))
       (message "Cannot find binary \"astyle\", please install first.")))
 #+END_SRC
-Indent buffer before save
+** Indent buffer before save
 #+BEGIN_SRC emacs-lisp
 (defun tedi:indent-before-save ()
     "Auto styling before saving."
