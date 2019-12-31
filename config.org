@@ -201,6 +201,10 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
   (defalias 'list-buffers 'ibuffer)
 #+END_SRC
 ** Functionality
+*** Typing replaces marked region
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC
 *** Move line up/down
 #+BEGIN_SRC emacs-lisp
   (defun tedi:move-line-up ()
@@ -244,6 +248,11 @@ first session of emacs. Add this to your emacs configuration file.
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil)
 (setq auto-save-default nil)
+#+END_SRC
+*** Disable lockfiles
+Emacs keeps track of files that you are currently editing by creating a symbolic link that looks like .#-emacsa08196. I do not need it.
+#+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
 #+END_SRC
 *** Smooth Scrolling
 #+BEGIN_SRC emacs-lisp
