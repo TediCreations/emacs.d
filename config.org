@@ -546,7 +546,6 @@ We are not going to have =relative-linum-mode= in every major mode, so this is u
   (setq line-number-mode t)
   (setq column-number-mode t)
 #+END_SRC
-
 ** Clock
 If you prefer the 12hr-format, change the variable to =nil= instead of =t=.
 *** Time format
@@ -558,30 +557,6 @@ If you prefer the 12hr-format, change the variable to =nil= instead of =t=.
 This turns on the clock globally.
 #+BEGIN_SRC emacs-lisp
   (display-time-mode 1)
-#+END_SRC
-** Battery indicator
-A package called =fancy-battery= will be used if we are in GUI emacs, otherwise the built in battery-mode will be used.
-Fancy battery has very odd colors if used in the tty, hence us disabling it.
-#+BEGIN_SRC emacs-lisp
-  (use-package fancy-battery
-    :ensure t
-    :config
-      (setq fancy-battery-show-percentage t)
-      (setq battery-update-interval 15)
-      (if window-system
-        (fancy-battery-mode)
-        (display-battery-mode)))
-#+END_SRC
-** System monitor
-A teeny-tiny system monitor that can be enabled or disabled at runtime, useful for checking performance
-with power-hungry processes in ansi-term
-
-symon can be toggled on and off with =Super + h=.
-#+BEGIN_SRC emacs-lisp
-  (use-package symon
-    :ensure t
-    :bind
-    ("s-h" . symon-mode))
 #+END_SRC
 * Minor conveniences
 Emacs is at it's best when it just does things for you, shows you the way, guides you so to speak.
