@@ -437,6 +437,15 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 (add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
 #+END_SRC
 * Packages
+** Evil-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :config (evil-mode 1))
+
+;; Default state shall be emacs for now
+(setq evil-default-state 'emacs)
+#+END_SRC
 ** Yasnippet
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -446,24 +455,54 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
       :ensure t)
     (yas-reload-all))
 #+END_SRC
+** All the icons
+Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
+#+BEGIN_SRC emacs-lisp
+  ;; This is needed by all-the-icons
+  (use-package memoize
+    :ensure t
+    :pin melpa-stable)
+
+  (use-package all-the-icons
+    :ensure t
+    :requires memoize)
+#+END_SRC
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
-  (defun tedi:test ()
-    (interactive)
-    (if (version< emacs-version "25.3")
-        (progn
-          ;; Dashboard need emacs 25.3
-          (use-package dashboard
-            :ensure t
-            :config
-            (dashboard-setup-startup-hook)
-            (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-            (setq dashboard-items '((recents  . 5)
-                                    (projects . 5)))
-            (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code."))
-          )
-      )
-    )
+  (use-package dashboard
+    :ensure t
+    :requires all-the-icons
+    :config
+    (dashboard-setup-startup-hook)
+    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    (setq dashboard-startup-banner (concat user-emacs-directory "img/dashLogo.png"))
+    (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code.")
+
+    (setq dashboard-items '((recents  . 5)
+			    (bookmarks . 5)
+			    (projects . 5)
+			    (agenda . 5)
+			    (registers . 5)))
+
+    ;; Do not center content.
+    (setq dashboard-center-content nil)
+
+    ;; Do not show info about the packages loaded and the init time
+    (setq dashboard-set-init-info nil)
+
+    ;; Disable shortcut "jump" indicators for each section.
+    (setq dashboard-show-shortcuts nil)
+
+    ;; Disable footer with random quotes
+    (setq dashboard-set-footer nil)
+
+    ;; Add icons
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+
+    ;;To show agenda for the upcoming seven days set the variable show-week-agenda-p to t.
+    (setq show-week-agenda-p t)
+    (setq dashboard-org-agenda-categories '("Tasks" "Appointments")))
 #+END_SRC
 ** Disable mouse
 Disable the mouse only inside emacs. This is usefull in a laptop and as an exercise to not use the mouse at all.

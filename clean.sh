@@ -13,6 +13,8 @@ rm -rf auto-save-list
 rm -rf semanticdb
 rm -rf eshell
 rm -rf url
-
+rm -rf .python-environments
+rm -rf places
+rm -rf tramp
 
 echo "Emacs directory is clean"
