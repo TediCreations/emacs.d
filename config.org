@@ -10,13 +10,22 @@
 #+BEGIN_SRC emacs-lisp
   (setq tedi-org-directory "~/org/")
 #+END_SRC
-* Visit notes
+* Quick visit my files
+** Notes
 #+BEGIN_SRC emacs-lisp
-  (defun tedi:notes-visit ()
-    "Visits the emacs config file"
+  (defun tedi:visit-notes ()
+    "Visits my notes"
     (interactive)
     (find-file (concat tedi-org-directory "notes.org")))
-  (global-set-key (kbd "C-c n") 'tedi:notes-visit)
+  (global-set-key (kbd "C-c n") 'tedi:visit-notes)
+#+END_SRC
+** Todo
+#+BEGIN_SRC emacs-lisp
+  (defun tedi:visit-todo ()
+    "Visits my todos"
+    (interactive)
+    (find-file (concat tedi-org-directory "todo.org")))
+  (global-set-key (kbd "C-c t") 'tedi:visit-todo)
 #+END_SRC
 * Startup
 ** Garbage collection
