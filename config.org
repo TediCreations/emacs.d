@@ -405,9 +405,14 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
   (setq-default tab-width 8)
 #+END_SRC
 * Indentation
-** Automatically indent when pressing RET
+** Auto intent
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "RET") 'newline-and-indent)
+  (use-package aggressive-indent
+    :ensure t
+    :init
+    (setq aggressive-indent-comments-too t)
+    :config
+    (global-aggressive-indent-mode 1))
 #+END_SRC
 ** Indent this buffer
 #+BEGIN_SRC emacs-lisp
@@ -415,15 +420,15 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
     "Use astyle command to auto format c/c++ code."
     (interactive "r")
     (if (executable-find "astyle")
-      (progn
-        (setq cursorPosition (point))
-        (shell-command-on-region
-         (point-min) (point-max)
-         (concat
-          "astyle")
-         (current-buffer) t
-         (get-buffer-create "*Astyle Errors*") t)
-        (goto-char cursorPosition))
+        (progn
+          (setq cursorPosition (point))
+          (shell-command-on-region
+           (point-min) (point-max)
+           (concat
+            "astyle")
+           (current-buffer) t
+           (get-buffer-create "*Astyle Errors*") t)
+          (goto-char cursorPosition))
       (message "Cannot find binary \"astyle\", please install first.")))
 #+END_SRC
 ** Indent buffer before save
