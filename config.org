@@ -712,6 +712,13 @@ In loving memory of bspwm, Super + Enter opens a new terminal, old habits die ha
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
+** Doxygen
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-doxygen
+    :ensure t
+    :config
+    (highlight-doxygen-global-mode t))
+#+END_SRC
 ** Helm-Gtags
 #+BEGIN_SRC emacs-lisp
   (use-package helm-gtags
