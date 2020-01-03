@@ -210,6 +210,10 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
   (defalias 'list-buffers 'ibuffer)
 #+END_SRC
 ** Functionality
+*** Dired
+#+BEGIN_SRC emacs-lisp
+(setq dired-listing-switches "-aBhl  --group-directories-first")
+#+END_SRC
 *** Typing replaces marked region
 #+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
@@ -477,14 +481,14 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 ** All the icons
 Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
 #+BEGIN_SRC emacs-lisp
-  ;; This is needed by all-the-icons
-  (use-package memoize
-    :ensure t
-    :pin melpa-stable)
-
   (use-package all-the-icons
+    :ensure t)
+
+  (use-package all-the-icons-dired
     :ensure t
-    :requires memoize)
+    :requires all-the-icons
+    :config
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+END_SRC
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
