@@ -812,7 +812,18 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     :ensure t
     :config
     (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 3))
+    (setq company-minimum-prefix-length 3)
+
+    ;; set default `company-backends'
+    (setq company-backends
+          '((company-files          ; files & directory
+             company-keywords       ; keywords
+             company-capf
+             company-yasnippet
+             )
+            (company-abbrev company-dabbrev)
+            ))
+    )
 
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
@@ -855,9 +866,21 @@ Requires libclang to be installed.
   (use-package company-irony
     :ensure t
     :config
-    (setq company-backends '((company-c-headers
-                              company-dabbrev-code
-                              company-irony))))
+    (setq company-backends
+          '((company-files          ; files & directory
+             company-keywords       ; keywords
+             company-capf
+             company-yasnippet
+             company-c-headers
+             company-gtags
+             company-clang
+             company-dabbrev-code
+             company-irony
+             )
+            (company-abbrev company-dabbrev)
+            ))
+    )
+
 
   (use-package irony
     :ensure t
@@ -892,6 +915,7 @@ Requires libclang to be installed.
 
   (defun python-mode-company-init ()
     (setq-local company-backends '((company-jedi
+                                    company-yasnippet
                                     company-etags
                                     company-dabbrev-code))))
 
