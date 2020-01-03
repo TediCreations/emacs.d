@@ -16,5 +16,6 @@ rm -rf url
 rm -rf .python-environments
 rm -rf places
 rm -rf tramp
+rm -rf irony
 
 echo "Emacs directory is clean"

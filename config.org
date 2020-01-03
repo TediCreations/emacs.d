@@ -442,6 +442,11 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 (add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
 #+END_SRC
 * Packages
+** Hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t)
+#+END_SRC
 ** Evil-mode
 #+BEGIN_SRC emacs-lisp
   (use-package evil
@@ -757,9 +762,45 @@ Minor, non-completion related settings and plugins for writing code.
     (yas-reload-all))
 #+END_SRC
 ** flycheck
+In order for flycheck to work with:
+- C/C++:
+  =M-x irony-install-server=
+- Python:
+  =M-x jedi:install-server=
+Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck_as_your_new_best_friend/
 #+BEGIN_SRC emacs-lisp
+  (defhydra tedi:checkSource (:color blue)
+    "
+      ^
+      ^Flycheck^          ^Errors^            ^Checker^
+      ^────────^──────────^──────^────────────^───────^─────
+      _q_ quit            _<_ previous        _?_ describe
+      _M_ manual          _>_ next            _d_ disable
+      _v_ verify setup    _f_ check           _m_ mode
+      ^^                  _l_ list            _s_ select
+      ^^                  ^^                  ^^
+      "
+    ("q" nil)
+    ("<" flycheck-previous-error :color pink)
+    (">" flycheck-next-error :color pink)
+    ("?" flycheck-describe-checker)
+    ("M" flycheck-manual)
+    ("d" flycheck-disable-checker)
+    ("f" flycheck-buffer)
+    ("l" flycheck-list-errors)
+    ("m" flycheck-mode)
+    ("s" flycheck-select-checker)
+    ("v" flycheck-verify-setup))
+
   (use-package flycheck
-    :ensure t)
+    :ensure t
+    :requires hydra
+    :bind ("C-c f" . tedi:checkSource/body)
+    :init (global-flycheck-mode)
+    :custom
+    (flycheck-display-errors-delay .3)
+    ;;(flycheck-stylelintrc "~/.stylelintrc.json")
+    )
 #+END_SRC
 ** company mode
 I set the delay for company mode to kick in to half a second, I also make sure that
