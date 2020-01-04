@@ -17,5 +17,6 @@ rm -rf .python-environments
 rm -rf places
 rm -rf tramp
 rm -rf irony
+rm -rf recentf
 
 echo "Emacs directory is clean"

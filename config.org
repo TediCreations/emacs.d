@@ -205,11 +205,58 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
 
   (global-whitespace-mode t)
 #+END_SRC
-*** Change the name of 'list-buffers'
+** Functionality
+*** ibuffer
+Use 'ibuffer' instead of 'list-buffers'
 #+BEGIN_SRC emacs-lisp
   (defalias 'list-buffers 'ibuffer)
 #+END_SRC
-** Functionality
+Hide all buffers that start with an asterisk
+#+BEGIN_SRC emacs-lisp
+  (require 'ibuf-ext)
+  (add-to-list 'ibuffer-never-show-predicates "^\\*")
+#+END_SRC
+Hide groups that are empty
+#+BEGIN_SRC emacs-lisp
+(setq ibuffer-show-empty-filter-groups nil)
+#+END_SRC
+Automatically update the ibuffer
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-auto-mode 1)
+               (ibuffer-switch-to-saved-filter-groups "home")))
+#+END_SRC
+ibuffer formats
+#+BEGIN_SRC emacs-lisp
+  (setq ibuffer-formats
+        '((mark modified read-only " "
+                (name 18 18 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark modified read-only " "
+                (name 45 45 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide))))
+#+END_SRC
+Group my buffer by version control
+#+BEGIN_SRC emacs-lisp
+  (use-package ibuffer-vc
+    :ensure t
+    :config
+    (add-hook 'ibuffer-hook
+              (lambda ()
+                (ibuffer-vc-generate-filter-groups-by-vc-root)
+                (ibuffer-vc-set-filter-groups-by-vc-root)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                  (ibuffer-do-sort-by-alphabetic))))
+    (add-to-list 'ibuffer-fontification-alist '(5 buffer-file-name 'font-lock-keyword-face)))
+#+END_SRC
 *** Dired
 #+BEGIN_SRC emacs-lisp
 (setq dired-listing-switches "-aBhl  --group-directories-first")
