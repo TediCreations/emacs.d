@@ -644,6 +644,15 @@ I use the modeline from spacemacs.
     (setq powerline-default-separator (quote arrow))
     (spaceline-spacemacs-theme))
 #+END_SRC
+Add icons at the modeline
+#+BEGIN_SRC emacs-lisp
+  (use-package mode-icons
+    :ensure t
+    :after spaceline
+    :defer 1
+    :config
+    (mode-icons-mode))
+#+END_SRC
 * Minor conveniences
 Emacs is at it's best when it just does things for you, shows you the way, guides you so to speak.
 This can be best achieved using a number of small extensions. While on their own they might not be particularly
