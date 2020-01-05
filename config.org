@@ -603,16 +603,29 @@ Smart move when you browse in code.
     ("C-a" . mwim-beginning-of-code-or-line)
     ("C-e" . mwim-end-of-code-or-line))
 #+END_SRC
-* Projectile
+** Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
-** Enable projectile globally
-This makes sure that everything can be a project.
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
     :init
     (projectile-mode 1))
+#+END_SRC
+** Neotree
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :requires all-the-icons
+    :requires projectile
+    :config
+    (global-set-key [f8] 'neotree-toggle)
+    ;; Use icons for GUI and arrow for the terminal.
+    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    ;; Every time when the neotree window is opened, let it find current file and jump to node.
+    (setq neo-smart-open t)
+    ;; When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
+    (setq projectile-switch-project-action 'neotree-projectile-action)
+    )
 #+END_SRC
 * Modeline
 The modeline is the heart of emacs, it offers information at all times, it's persistent
