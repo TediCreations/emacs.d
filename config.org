@@ -206,6 +206,23 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
   (global-whitespace-mode t)
 #+END_SRC
 ** Functionality
+*** I do not care about system buffers
+See only buffers that are associated to a file
+=buffer-predicate= decides which buffers you want to see in the cycle for
+ windows in that frame. The function buffer-file-name returns nil for buffers
+that are not associated to files and a non-nil value (the filename) for those
+ that are.
+After doing so, C-x <left> and C-x <right> called from windows in that frame
+will only cycle through buffers with associated files.
+In short it will Cycle through buffers whose name does not start with an asterisk
+#+BEGIN_SRC emacs-lisp
+  ;;(defun tedi:let-cycle-on-my-buffers-only ()
+  ;;  (interactive)
+  ;;    (set-frame-parameter (selected-frame) 'buffer-predicate #'buffer-file-name))
+  ;;(add-hook 'after-init-hook #'tedi:let-cycle-on-my-buffers-only)
+
+  (add-to-list 'default-frame-alist '(buffer-predicate . buffer-file-name))
+#+END_SRC
 *** ibuffer
 Use 'ibuffer' instead of 'list-buffers'
 #+BEGIN_SRC emacs-lisp
@@ -259,11 +276,11 @@ Group my buffer by version control
 #+END_SRC
 *** Dired
 #+BEGIN_SRC emacs-lisp
-(setq dired-listing-switches "-aBhl  --group-directories-first")
+  (setq dired-listing-switches "-aBhl  --group-directories-first")
 #+END_SRC
 *** Typing replaces marked region
 #+BEGIN_SRC emacs-lisp
-(delete-selection-mode 1)
+  (delete-selection-mode 1)
 #+END_SRC
 *** Move line up/down
 #+BEGIN_SRC emacs-lisp
@@ -318,7 +335,7 @@ Emacs keeps track of files that you are currently editing by creating a symbolic
 #+BEGIN_SRC emacs-lisp
 ;; Vertical Scroll
 (setq scroll-step 1)
-(setq scroll-margin 1)
+(setq scroll-margin 16)
 (setq scroll-conservatively 101)
 (setq scroll-up-aggressively 0.01)
 (setq scroll-down-aggressively 0.01)
@@ -347,13 +364,12 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+END_SRC
 *** Blindly follow symlinks without asking me
 #+BEGIN_SRC emacs-lisp
-(setq vc-follow-symlinks nil)
+  (setq vc-follow-symlinks nil)
 #+END_SRC
 *** Auto refresh file if changed outside
 #+BEGIN_SRC emacs-lisp
   (global-auto-revert-mode t)
 #+END_SRC
-
 * GDB
 ** Debugging environment
 #+BEGIN_SRC emacs-lisp
@@ -444,7 +460,7 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
               (local-set-key [f5]    'gud-next)
               (local-set-key [f6]    'gud-step)
               (local-set-key [f7]    'gud-until)
-              (local-set-key [f8]    'gud-cont)
+              ;;(local-set-key [f8]    'gud-cont)
               (local-set-key [f9]    'tedi:gud-toggle-breakpoint)
               ;;(local-set-key [f9]    'gud-break)
               )
@@ -612,19 +628,81 @@ with a =.git= directory as projects and helps you manage them accordingly.
     :init
     (projectile-mode 1))
 #+END_SRC
+** Swiper
+Counsel is a requirement for swiper. Swiper makes search easier.
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+  :ensure t)
+
+(use-package swiper
+  :ensure counsel
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-load-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c k") 'counsel-ag)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+#+END_SRC
 ** Neotree
 #+BEGIN_SRC emacs-lisp
   (use-package neotree
+    :requires swiper
     :requires all-the-icons
     :requires projectile
+    :defer 1
+    :init
+    ;; Autorefresh
+    (setq neo-autorefresh t)
+
     :config
     (global-set-key [f8] 'neotree-toggle)
-    ;; Use icons for GUI and arrow for the terminal.
-    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    ;; Use nerd for GUI and ascii for the terminal.
+    (setq neo-theme (if (display-graphic-p) 'icons 'nerd))
+
     ;; Every time when the neotree window is opened, let it find current file and jump to node.
     (setq neo-smart-open t)
     ;; When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
     (setq projectile-switch-project-action 'neotree-projectile-action)
+    ;; Show hidden files
+    (setq-default neo-show-hidden-files t)
+
+    (setq neo-vc-integration '(face char))
+    (setq neo-toggle-window-keep-p t)
+    (setq neo-force-change-root t)
+
+    (add-hook 'neotree-mode-hook
+              (lambda ()
+                ;;(setq-local mode-line-format nil)
+                (setq-local display-line-numbers nil)
+                (local-set-key (kbd "C-f") 'swiper)
+                (local-set-key (kbd "C-s") 'isearch-forward)
+                (local-set-key (kbd "C-M-s") 'isearch-forward-regexp)
+                (local-set-key (kbd "C-r") 'isearch-backward)
+                (local-set-key (kbd "C-M-r") 'isearch-backward-regexp)))
+
+    ;; Add icons
+    (add-to-list 'all-the-icons-icon-alist
+                 '("^build\.boot$" all-the-icons-alltheicon "clojure-line" :height 1.0 :face all-the-icons-blue :v-adjust 0.0))
+
+    ;; face customizations
+    (set-face-attribute 'neo-vc-edited-face nil
+                        :foreground "#E2C08D")
+    (set-face-attribute 'neo-vc-added-face nil
+                        :foreground "green4")
     )
 #+END_SRC
 * Modeline
@@ -901,7 +979,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     :ensure t
     :config
     (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 3)
+    (setq company-minimum-prefix-length 1)
 
     ;; set default `company-backends'
     (setq company-backends
@@ -1107,7 +1185,6 @@ Those are all rather self-explanatory.
   (define-obsolete-function-alias 'org-define-error 'define-error)
 #+END_SRC
 ** Common settings
-
 #+BEGIN_SRC emacs-lisp
   (setq org-ellipsis " ")
   (setq org-src-fontify-natively t)
@@ -1117,25 +1194,53 @@ Those are all rather self-explanatory.
   (setq org-src-window-setup 'current-window)
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
-
 ** Syntax highlighting for documents exported to HTML
 #+BEGIN_SRC emacs-lisp
   (use-package htmlize
     :ensure t)
 #+END_SRC
-
+** Language support
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :ensure t
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       ;; https://orgmode.org/worg/org-contrib/babel/languages.html
+       (awk . t)
+       (ditaa . t)
+       (dot . t)
+       (css . t)
+       (calc .t)
+       (C . t)
+       (emacs-lisp . t)
+       (haskell . t)
+       (gnuplot . t)
+       (latex . t)
+       ;;(ledger . t)
+       (js . t)
+       ;;(http . t)
+       (perl . t)
+       (python . t)
+       (R . t)
+       (scheme . t)
+       ;;(sh . t)
+       (shell . t)
+       (sql . t)
+       (sqlite . t)
+       )))
+#+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+#+END_SRC
 ** Line wrapping
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook
             '(lambda ()
                (visual-line-mode 1)))
 #+END_SRC
-
-** Keybindings
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c '") 'org-edit-src-code)
-#+END_SRC
-
 ** Org Bullets
 Makes it all look a bit nicer, I hate looking at asterisks.
 #+BEGIN_SRC emacs-lisp
@@ -1144,14 +1249,20 @@ Makes it all look a bit nicer, I hate looking at asterisks.
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
-
 ** Easy-to-add emacs-lisp template
 Hitting tab after an "<el" in an org-mode file will create a template for elisp insertion.
 #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-structure-template-alist
-                 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")
-                 '("c" "#+BEGIN_SRC c\n?\n#+END_SRC")
-                 )
+  (add-to-list 'org-structure-template-alist
+               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+
+  (add-to-list 'org-structure-template-alist
+               '("py"  "#+BEGIN_SRC python -n\n?\n#+END_SRC"))
+
+  (add-to-list 'org-structure-template-alist
+               '("cl"  "#+BEGIN_SRC C\n?\n#+END_SRC"))
+
+  (add-to-list 'org-structure-template-alist
+               '("sh"  "#+BEGIN_SRC shell\n?\n#+END_SRC"))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1186,35 +1297,6 @@ Here is how we add more of them!
   (require 'ox-reveal)
   (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-3.7.0/")
   (setq org-reveal-title-slide nil)
-#+END_SRC
-* Swiper
-Counsel is a requirement for swiper. Swiper makes search easier.
-#+BEGIN_SRC emacs-lisp
-(use-package counsel
-  :ensure t)
-
-(use-package swiper
-  :ensure try
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    (global-set-key (kbd "<f6>") 'ivy-resume)
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> l") 'counsel-load-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c k") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 #+END_SRC
 * Iedit
 Edit multiple regions simultaneously
