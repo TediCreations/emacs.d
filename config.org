@@ -469,19 +469,54 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 * Coding style
 ** C/C++ style is bsd( Allman )
 #+BEGIN_SRC emacs-lisp
-  (setq c-default-style "bsd"
-        c-basic-offset 8)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq c-default-style "bsd"
+                    c-basic-offset 8)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq c-default-style "bsd"
+                    c-basic-offset 8)))
 #+END_SRC
-** Indentation is tabs
+** C/C++ Indentation is tabs
 #+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode t)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode t)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode t)))
 #+END_SRC
-** Tab is 8 spaces
+** C/C++ Tab is 8 spaces
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 8)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq-default tab-width 8)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq-default tab-width 8)))
+#+END_SRC
+** Python Indentation is tabs
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode t)))
+#+END_SRC
+** Python Tab is 8 spaces
+Since python.el indents only 4 columns, by default, the above will use tabs when the indent is a multiple of 8 and tabs followed by spaces for other indents.
+If you need to use a single tab for every indent level, you'll also need to set python-indent to 8. Then you can set tab-width to whatever width you want to see the tabs displayed as.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode t)
+              (setq python-indent 8)
+              (setq tab-width 8)))
 #+END_SRC
 * Indentation
-** Auto intent
+** Auto indent
 #+BEGIN_SRC emacs-lisp
   (use-package aggressive-indent
     :ensure t

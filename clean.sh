@@ -18,5 +18,6 @@ rm -rf places
 rm -rf tramp
 rm -rf irony
 rm -rf recentf
+rm -rf elpy
 
 echo "Emacs directory is clean"
