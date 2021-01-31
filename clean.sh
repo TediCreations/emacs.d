@@ -19,5 +19,7 @@ rm -rf tramp
 rm -rf irony
 rm -rf recentf
 rm -rf elpy
+rm -rf .dap-breakpoints
+rm -rf .lsp-session-v1
 
 echo "Emacs directory is clean"
