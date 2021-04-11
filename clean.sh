@@ -21,5 +21,7 @@ rm -rf recentf
 rm -rf elpy
 rm -rf .dap-breakpoints
 rm -rf .lsp-session-v1
+rm -rf smex-items
+rm -rf transient
 
 echo "Emacs directory is clean"

@@ -37,3 +37,9 @@ test.el
 
 # Stackoverflow
 .sx/
+
+# Smex
+smex-items
+
+# Magit
+transient
