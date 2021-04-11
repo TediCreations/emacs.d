@@ -701,7 +701,7 @@ with a =.git= directory as projects and helps you manage them accordingly.
 ** Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :ensure projectile
+    :requires projectile
     :bind ("C-x g" . magit-status)
     :init
     (setq projectile-switch-project-action 'magit-status)
