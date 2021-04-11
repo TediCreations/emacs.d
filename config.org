@@ -1507,3 +1507,48 @@ For python also run: pip install python-language-server[all]
   (use-package dap-mode)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+END_SRC
+* New
+** Bindings
+#+BEGIN_SRC emacs-lisp
+  (general-define-key                                          ;"M-x" 'smex
+   "C-s" 'counsel-grep-or-swiper)
+
+  (general-define-key
+   :prefix "C-c"
+   ;; bind "C-c a" to 'org-agenda
+   "j" 'counsel-git-grep
+   "s" 'eshell
+   "b" 'butterfly
+   )
+#+END_SRC
+** Git
+#+BEGIN_SRC emacs-lisp
+  ;;Display line changes in gutter based on git history. Enable it everywhere.
+
+  ;;(use-package git-gutter
+  ;;  :config
+  ;;  (global-git-gutter-mode t))
+
+  ;;(use-package git-gutter+
+  ;;  :config
+  ;;  (global-git-gutter+-mode))
+
+  (use-package git-gutter-fringe+
+    :bind
+    (("C-c m d" . git-gutter+-show-hunk-inline-at-point)
+     ("C-c m p" . git-gutter+-previous-hunk)
+     ("C-c m n" . git-gutter+-next-hunk))
+    :init
+    (global-git-gutter+-mode))
+
+  ;;(use-package diff-hl
+  ;;  :init
+  ;;  (message "Loading diff-hl!")
+  ;;  :config
+  ;;  (message "Loaded diff-hl!")
+  ;;  (global-diff-hl-mode)
+
+  ;;  (diff-hl-margin-mode)
+  ;;  ;;(diff-hl-flydiff-mode)
+  ;;  )
+#+END_SRC
