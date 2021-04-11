@@ -1086,7 +1086,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
   (use-package company
     :ensure t
     :config
-    (setq company-idle-delay 0)
+    (setq company-idle-delay 0.0)
     (setq company-minimum-prefix-length 1)
 
     ;; set default `company-backends'
