@@ -6,6 +6,12 @@
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 [[./img/screen.png]]
 
+* Bugfixes
+Package cl is deprecated in Emacs-27
+https://github.com/kiwanami/emacs-epc/issues/35
+#+BEGIN_SRC emacs-lisp
+  (setq byte-compile-warnings '(cl-functions))
+#+END_SRC
 * Environment variables
 #+BEGIN_SRC emacs-lisp
   (setq tedi-org-directory "~/org/")
