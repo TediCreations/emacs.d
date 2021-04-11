@@ -980,6 +980,11 @@ In loving memory of bspwm, Super + Enter opens a new terminal, old habits die ha
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
+** Column 80 limit
+#+BEGIN_SRC emacs-lisp
+  (setq-default display-fill-column-indicator-column 79)
+  (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+#+END_SRC
 ** Doxygen
 #+BEGIN_SRC emacs-lisp
   (use-package highlight-doxygen
