@@ -1403,10 +1403,11 @@ Navigation to any place inside the window
     :hook (company-mode . company-box-mode))
 #+END_SRC
 ** Glue company and lsp
+After emacs 27 update this stopped working.
 #+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-    :after (company lsp-mode)
-    :ensure t)
+  ;(use-package company-lsp
+  ;  :after (company lsp-mode)
+  ;  :ensure t)
 #+END_SRC
 ** Lsp-mode
 May need to run lsp-install-server and select the language of choice
