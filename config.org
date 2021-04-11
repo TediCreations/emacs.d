@@ -782,6 +782,15 @@ https://github.com/jaypei/emacs-neotree/issues/194
                         :foreground "green4")
     )
 #+END_SRC
+** Keyfreq
+Record keybind use
+This will help me setup ergonomics
+#+BEGIN_SRC emacs-lisp
+  (use-package keyfreq
+    :config
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
+#+END_SRC
 * Modeline
 The modeline is the heart of emacs, it offers information at all times, it's persistent
 and verbose enough to gain a full understanding of modes and states you are in.
