@@ -758,7 +758,9 @@ https://github.com/jaypei/emacs-neotree/issues/194
                 (local-set-key (kbd "C-s") 'isearch-forward)
                 (local-set-key (kbd "C-M-s") 'isearch-forward-regexp)
                 (local-set-key (kbd "C-r") 'isearch-backward)
-                (local-set-key (kbd "C-M-r") 'isearch-backward-regexp)))
+                (local-set-key (kbd "C-M-r") 'isearch-backward-regexp)
+                (local-set-key (kbd "o") 'neotree-open-file-in-system-application)
+                (local-set-key (kbd "r") 'neotree-refresh)))
 
     ;; Add icons
     (add-to-list 'all-the-icons-icon-alist
@@ -1405,9 +1407,9 @@ Navigation to any place inside the window
 ** Glue company and lsp
 After emacs 27 update this stopped working.
 #+BEGIN_SRC emacs-lisp
-  ;(use-package company-lsp
-  ;  :after (company lsp-mode)
-  ;  :ensure t)
+;;  (use-package company-lsp
+;;    :after (company lsp-mode)
+;;    :ensure t)
 #+END_SRC
 ** Lsp-mode
 May need to run lsp-install-server and select the language of choice
