@@ -578,6 +578,10 @@ Indentation
 (add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
 #+END_SRC
 * Packages
+** General
+#+BEGIN_SRC emacs-lisp
+  (use-package general)
+#+END_SRC
 ** Hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -718,6 +722,8 @@ Counsel is a requirement for swiper. Swiper makes search easier.
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 #+END_SRC
 ** Neotree
+[Config issue] When emacs starts in daemon mode the icons are not shown from a gui client
+https://github.com/jaypei/emacs-neotree/issues/194
 #+BEGIN_SRC emacs-lisp
   (use-package neotree
     :requires swiper
