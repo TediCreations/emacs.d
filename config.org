@@ -791,6 +791,13 @@ This will help me setup ergonomics
     (keyfreq-mode 1)
     (keyfreq-autosave-mode 1))
 #+END_SRC
+** Helpful
+#+BEGIN_SRC emacs-lisp
+(use-package helpful
+  :general
+  ("C-h f" 'helpful-function)
+  ("C-h v" 'helpful-variable))
+#+END_SRC
 * Modeline
 The modeline is the heart of emacs, it offers information at all times, it's persistent
 and verbose enough to gain a full understanding of modes and states you are in.
