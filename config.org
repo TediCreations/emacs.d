@@ -509,6 +509,37 @@ If you need to use a single tab for every indent level, you'll also need to set 
               (setq python-indent 8)
               (setq tab-width 8)))
 #+END_SRC
+** Html
+Indentation
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :mode
+    (("\\.phtml\\'" . web-mode)
+     ("\\.tpl\\.php\\'" . web-mode)
+     ("\\.jsp\\'" . web-mode)
+     ("\\.as[cp]x\\'" . web-mode)
+     ("\\.erb\\'" . web-mode)
+     ("\\.mustache\\'" . web-mode)
+     ("\\.djhtml\\'" . web-mode)
+     ("\\.jst.ejs\\'" . web-mode)
+     ("\\.html?\\'" . web-mode))
+    :init
+    (setq web-mode-enable-block-face t)
+    (setq web-mode-enable-comment-keywords t)
+    (setq web-mode-enable-current-element-highlight t)
+    (setq web-mode-enable-current-column-highlight t)
+    (setq web-mode-script-padding 2)
+    (setq web-mode-style-padding 2)
+    (setq web-mode-comment-style 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-engines-alist
+          '(("django" . "focus/.*\\.html\\'")
+            ("ctemplate" . "realtimecrm/.*\\.html\\'")
+            )
+          )
+    )
+#+END_SRC
 * Indentation
 ** Auto indent
 #+BEGIN_SRC emacs-lisp
