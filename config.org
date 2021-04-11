@@ -1415,7 +1415,7 @@ Here is how we add more of them!
   (use-package ox-reveal
     :ensure t)
   (require 'ox-reveal)
-  (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-3.7.0/")
+  (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-4.1.0/")
   (setq org-reveal-title-slide nil)
 #+END_SRC
 * Iedit
