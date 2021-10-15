@@ -598,6 +598,25 @@ Indentation
 #+BEGIN_SRC emacs-lisp
   (use-package general)
 #+END_SRC
+** Ag
+The Silver Searcher
+https://github.com/Wilfred/ag.el
+
+The binary is also needed:
+https://github.com/ggreer/the_silver_searcher
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t
+    :config
+    ;; Show colors
+    (setq ag-highlight-search t)
+    ;; Reuse the same *ag* buffer for all your searches:
+    (setq ag-reuse-buffers 't)
+    :bind
+    ("C-c C-q" . ag-project)
+    ("C-c C-d" . ag-dired))
+#+END_SRC
 ** Hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
