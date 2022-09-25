@@ -197,7 +197,7 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
     (use-package pretty-mode
       :ensure t
       :config
-      (global-pretty-mode t)))
+      (global-pretty-mode nil)))
 #+END_SRC
 *** Visualize whitespace
 #+BEGIN_SRC emacs-lisp
@@ -483,6 +483,22 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
             )
 #+END_SRC
 * Coding style
+** Bash/sh
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'sh-mode-hook
+            (lambda ()
+              (setq sh-basic-offset 8
+                    sh-indentation 8
+                    sh-indent-for-case-label 0
+                    indent-tabs-mode t
+                    sh-indent-for-case-alt '+))
+            )
+
+  (use-package lsp-mode
+    :commands lsp
+    :hook
+    (sh-mode . lsp))
+#+END_SRC
 ** C/C++ style is bsd( Allman )
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-hook
