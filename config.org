@@ -246,7 +246,7 @@ Hide groups that are empty
 Automatically update the ibuffer
 #+BEGIN_SRC emacs-lisp
   (add-hook 'ibuffer-mode-hook
-            '(lambda ()
+            (lambda ()
                (ibuffer-auto-mode 1)
                (ibuffer-switch-to-saved-filter-groups "home")))
 #+END_SRC
@@ -675,7 +675,12 @@ Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
     :requires all-the-icons
     :config
     (dashboard-setup-startup-hook)
-    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    (setq initial-buffer-choice
+         (lambda () 
+            (let ((buf (get-buffer "*dashboard*")))
+              (unless buf
+                (setq buf (get-buffer-create "*dashboard*")))
+              buf)))
     (setq dashboard-startup-banner (concat user-emacs-directory "img/dashLogo.png"))
     (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code.")
 
@@ -1334,10 +1339,6 @@ academic papers, presentations, schedules, blogposts and guides.
 Org-mode is one of the most complex things ever, lets make it a bit more usable with some basic configuration.
 
 Those are all rather self-explanatory.
-** Fix bugs
-#+BEGIN_SRC emacs-lisp
-  (define-obsolete-function-alias 'org-define-error 'define-error)
-#+END_SRC
 ** Common settings
 #+BEGIN_SRC emacs-lisp
   (setq org-ellipsis " ")
@@ -1392,7 +1393,7 @@ Those are all rather self-explanatory.
 ** Line wrapping
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook
-            '(lambda ()
+            (lambda ()
                (visual-line-mode 1)))
 #+END_SRC
 ** Org Bullets
@@ -1587,4 +1588,17 @@ For python also run: pip install python-language-server[all]
   ;;  (diff-hl-margin-mode)
   ;;  ;;(diff-hl-flydiff-mode)
   ;;  )
+#+END_SRC
+** Reformat Python code
+#+BEGIN_SRC emacs-lisp
+;(defun reformat-code ()
+;  (interactive)
+;  (let ((file-extension (file-name-extension buffer-file-name)))
+;    (cond
+;     ((string= file-extension "c")
+;      (shell-command-on-region (point-min) (point-max) "your-c-formatter"))
+;     ((string= file-extension "py")
+;      (py-autopep8-enable-on-save) (py-autopep8)))))
+;
+;(add-hook 'before-save-hook #'reformat-code)
 #+END_SRC
