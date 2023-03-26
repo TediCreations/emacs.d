@@ -39,12 +39,8 @@ RUN chown ${USERNAME}:${USERNAME} /home/${USERNAME}
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
-# Download emacs configs
-# RUN git clone https://github.com/TediCreations/.emacs.d --depth 1
-# RUN cd /home/${USERNAME}/.emacs.d/ && git checkout c7830adab0d4a0164b58e79c19f2e3dca6179a8d
-
-# Copy config
-COPY . /home/${USERNAME}/.emacs.d
+# Get emacs configs
+COPY --chown=${USERNAME}:${USERNAME} . /home/${USERNAME}/.emacs.d
 
 # Build config
 RUN emacs -q --batch --eval="(load-file \"~/.emacs.d/init.el\")"
