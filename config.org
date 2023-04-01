@@ -584,30 +584,30 @@ Indentation
 #+END_SRC
 ** Indent this buffer
 #+BEGIN_SRC emacs-lisp
-  (defun tedi:indent-c-buffer ()
-    "Use astyle command to auto format c/c++ code."
-    (interactive "r")
-    (if (executable-find "astyle")
-        (progn
-          (setq cursorPosition (point))
-          (shell-command-on-region
-           (point-min) (point-max)
-           (concat
-            "astyle")
-           (current-buffer) t
-           (get-buffer-create "*Astyle Errors*") t)
-          (goto-char cursorPosition))
-      (message "Cannot find binary \"astyle\", please install first.")))
+  ;; (defun tedi:indent-c-buffer ()
+  ;;   "Use astyle command to auto format c/c++ code."
+  ;;   (interactive "r")
+  ;;   (if (executable-find "astyle")
+  ;;       (progn
+  ;;         (setq cursorPosition (point))
+  ;;         (shell-command-on-region
+  ;;          (point-min) (point-max)
+  ;;          (concat
+  ;;           "astyle")
+  ;;          (current-buffer) t
+  ;;          (get-buffer-create "*Astyle Errors*") t)
+  ;;         (goto-char cursorPosition))
+  ;;     (message "Cannot find binary \"astyle\", please install first.")))
 #+END_SRC
 ** Indent buffer before save
 #+BEGIN_SRC emacs-lisp
-(defun tedi:indent-before-save ()
-    "Auto styling before saving."
-    (interactive)
-    (when (member major-mode '(cc-mode c++-mode c-mode))
-      (tedi:indent-c-buffer)))
+  ;; (defun tedi:indent-before-save ()
+  ;;     "Auto styling before saving."
+  ;;     (interactive)
+  ;;     (when (member major-mode '(cc-mode c++-mode c-mode))
+  ;;       (tedi:indent-c-buffer)))
 
-(add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
+  ;; (add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
 #+END_SRC
 * Packages
 ** General
@@ -747,15 +747,6 @@ with a =.git= directory as projects and helps you manage them accordingly.
     :ensure t
     :init
     (projectile-mode 1))
-#+END_SRC
-** Magit
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :requires projectile
-    :bind ("C-x g" . magit-status)
-    :init
-    (setq projectile-switch-project-action 'magit-status)
-    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 #+END_SRC
 ** Swiper
 Counsel is a requirement for swiper. Swiper makes search easier.
@@ -1075,8 +1066,8 @@ Minor, non-completion related settings and plugins for writing code.
 #+END_SRC
 ** Compiling
 #+BEGIN_SRC emacs-lisp
-(define-key global-map (kbd "C-,") 'compile)
-(define-key global-map (kbd "C-.") 'recompile)
+(define-key prog-mode-map (kbd "C-,") 'compile)
+(define-key prog-mode-map (kbd "C-.") 'recompile)
 #+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -1121,7 +1112,7 @@ Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck
   (use-package flycheck
     :ensure t
     :requires hydra
-    :bind ("C-c f" . tedi:checkSource/body)
+    :bind ("C-c l" . tedi:checkSource/body)
     :init (global-flycheck-mode)
     :custom
     (flycheck-display-errors-delay .3)
@@ -1157,6 +1148,25 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
     (define-key company-active-map (kbd "SPC") #'company-abort))
+#+END_SRC
+** Formatting
+#+BEGIN_SRC emacs-lisp
+    (use-package format-all
+      :hook
+      (prog-mode . format-all-mode)
+      :general
+      (:keymaps 'prog-mode-map
+                :prefix "C-c"
+                "f" 'format-all-buffer)
+      :config
+      (setq-default format-all-show-errors 'warnings)
+      (setq-default format-all-formatters
+                    '(("Python" isort)
+                      ("Python" "yapf -i")
+                      ("JavaScript" "prettier-standard")
+                      ("JSON" "jq")
+                      ("C" astyle))
+                    ))
 #+END_SRC
 ** specific languages
 Be it for code or prose, completion is a must.
@@ -1405,19 +1415,12 @@ Makes it all look a bit nicer, I hate looking at asterisks.
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
 ** Easy-to-add emacs-lisp template
-Hitting tab after an "<el" in an org-mode file will create a template for elisp insertion.
+Hitting C-c C-, and the keys here creates a block from template.
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-structure-template-alist
-               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
-
-  (add-to-list 'org-structure-template-alist
-               '("py"  "#+BEGIN_SRC python -n\n?\n#+END_SRC"))
-
-  (add-to-list 'org-structure-template-alist
-               '("cl"  "#+BEGIN_SRC C\n?\n#+END_SRC"))
-
-  (add-to-list 'org-structure-template-alist
-               '("sh"  "#+BEGIN_SRC shell\n?\n#+END_SRC"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("cl" . "src c"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1544,21 +1547,30 @@ For python also run: pip install python-language-server[all]
   (use-package dap-mode)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+END_SRC
-* New
-** Bindings
+* Docker
+** Dockerfile
 #+BEGIN_SRC emacs-lisp
-  (general-define-key                                          ;"M-x" 'smex
-   "C-s" 'counsel-grep-or-swiper)
-
-  (general-define-key
-   :prefix "C-c"
-   ;; bind "C-c a" to 'org-agenda
-   "j" 'counsel-git-grep
-   "s" 'eshell
-   "b" 'butterfly
-   )
+  (use-package dockerfile-mode
+  :ensure t
+  :mode "Dockerfile\\'")
 #+END_SRC
-** Git
+* Git
+** Magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :requires projectile
+    :general
+    (:keymaps 'projectile-mode-map
+              :prefix "C-c"
+              "g" 'magit-status)
+    :init
+    ;; Search this directory upto depth for git repositories
+    (setq magit-repository-directories
+          '(("~/proj" . 1)))
+    (setq projectile-switch-project-action 'magit-status)
+    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+#+END_SRC
+** Gutter
 #+BEGIN_SRC emacs-lisp
   ;;Display line changes in gutter based on git history. Enable it everywhere.
 
@@ -1571,12 +1583,19 @@ For python also run: pip install python-language-server[all]
   ;;  (global-git-gutter+-mode))
 
   (use-package git-gutter-fringe+
-    :bind
-    (("C-c m d" . git-gutter+-show-hunk-inline-at-point)
-     ("C-c m p" . git-gutter+-previous-hunk)
-     ("C-c m n" . git-gutter+-next-hunk))
-    :init
-    (global-git-gutter+-mode))
+    :general
+    (:keymaps 'projectile-mode-map
+              :prefix "C-c m"
+              "p" 'git-gutter+-previous-hunk
+              "n" 'git-gutter+-next-hunk)
+    :config
+    (setq-default git-gutter-fr+-side 'right-fringe) ; Show the git gutter on the right side of the window
+    (setq-default fringes-outside-margins t) ; Show git gutter in the margin
+    (setq-default left-fringe-width 18) ; Set the left fringe width to accommodate the git gutter icons
+    (setq-default git-gutter+-added-sign "+") ; Use + to indicate added lines
+    (setq-default git-gutter+-deleted-sign "-") ; Use - to indicate deleted lines
+    (setq-default git-gutter+-modified-sign "~") ; Use ~ to indicate modified lines
+    (global-git-gutter+-mode)) ; Enable git-gutter+-mode globally
 
   ;;(use-package diff-hl
   ;;  :init
@@ -1588,6 +1607,49 @@ For python also run: pip install python-language-server[all]
   ;;  (diff-hl-margin-mode)
   ;;  ;;(diff-hl-flydiff-mode)
   ;;  )
+#+END_SRC
+** Timemachine
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
+    :ensure t
+    :general
+    (:keymaps 'projectile-mode-map
+              :prefix "C-c"
+              "h" 'git-timemachine)
+    :config
+    ;; Set custom options here
+    (setq git-timemachine-show-minibuffer-details t)
+    (setq git-timemachine-abbreviation-length 8)
+    (setq git-timemachine-revision-format "%h (%ad)")
+    )
+#+END_SRC
+** Browse at remote
+#+BEGIN_SRC emacs-lisp
+  (use-package browse-at-remote
+    :ensure t
+    :general
+    (:keymaps 'projectile-mode-map
+              :prefix "C-c"
+              "u" 'browse-at-remote)
+    :config
+    (setq browse-at-remote-prefer-symbolic nil))
+#+END_SRC
+* New
+** Bindings
+#+BEGIN_SRC emacs-lisp
+  (general-define-key
+   ;;"M-x" 'smex
+   "C-s" 'counsel-grep-or-swiper)
+
+  (general-define-key
+   :prefix "C-c"
+   ;; bind "C-c a" to 'org-agenda
+   "j" 'counsel-git-grep
+   "s" 'eshell
+   )
+
+   ;;(global-unset-key (kbd "C-x"))
+   ;;(global-set-key (kbd "s") 'eshell)
 #+END_SRC
 ** Reformat Python code
 #+BEGIN_SRC emacs-lisp

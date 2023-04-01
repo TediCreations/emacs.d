@@ -44,7 +44,7 @@ COPY --chown=${USERNAME}:${USERNAME} . /home/${USERNAME}/.emacs.d
 
 # Build config
 # RUN emacs -q --batch --eval="(load-file \"~/.emacs.d/init.el\")"
-RUN emacs -q --batch -l "~/.emacs.d/init.el" -f batch-byte-compile
+# RUN emacs -q --batch -l "~/.emacs.d/init.el" -f batch-byte-compile
 
 # ----------------------------------------------------------
 # Startup
