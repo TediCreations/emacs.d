@@ -676,7 +676,7 @@ Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
     :config
     (dashboard-setup-startup-hook)
     (setq initial-buffer-choice
-         (lambda () 
+          (lambda ()
             (let ((buf (get-buffer "*dashboard*")))
               (unless buf
                 (setq buf (get-buffer-create "*dashboard*")))
@@ -1009,11 +1009,6 @@ This goes without saying but you can replace bash with your shell of choice.
   (defadvice ansi-term (before force-bash)
     (interactive (list my-term-shell)))
   (ad-activate 'ansi-term)
-#+END_SRC
-** Easy to remember keybinding
-In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "<s-return>") 'ansi-term)
 #+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
