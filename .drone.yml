@@ -6,10 +6,10 @@ platform:
   os: linux
   arch: arm64
 
-steps:
-- name: Build
-  image: plugins/docker
-  settings:
-    repo: tedicreations/emacs
-    tags: [ latest ]
-    dry_run: true   
+#steps:
+# - name: Build
+#   image: plugins/docker
+#   settings:
+#     repo: tedicreations/emacs
+#     tags: [ latest ]
+#     dry_run: true
