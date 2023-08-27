@@ -537,9 +537,9 @@ If you need to use a single tab for every indent level, you'll also need to set 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook
             (lambda ()
-              (setq indent-tabs-mode t)
-              (setq python-indent 8)
-              (setq tab-width 8)))
+              (setq-default indent-tabs-mode nil)
+              (setq-default tab-width 4)
+              (setq python-indent-offset 4)))
 #+END_SRC
 ** Html
 Indentation
