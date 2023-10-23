@@ -1,5 +1,5 @@
 #+STARTUP: overview
-#+TITLE: TediCreation's Emacs Configuration
+#+TITLE: Kanelis Elias's Emacs Configuration
 #+CREATOR: Kanelis Elias
 #+LANGUAGE: en
 #+OPTIONS: num:nil
@@ -487,10 +487,10 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
 #+BEGIN_SRC emacs-lisp
   (add-hook 'sh-mode-hook
             (lambda ()
-              (setq sh-basic-offset 8
-                    sh-indentation 8
+              (setq sh-basic-offset 2
+                    sh-indentation 2
                     sh-indent-for-case-label 0
-                    indent-tabs-mode t
+                    indent-tabs-mode nil
                     sh-indent-for-case-alt '+))
             )
 
@@ -537,9 +537,9 @@ If you need to use a single tab for every indent level, you'll also need to set 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook
             (lambda ()
-              (setq indent-tabs-mode t)
-              (setq python-indent 8)
-              (setq tab-width 8)))
+              (setq-default indent-tabs-mode nil)
+              (setq-default tab-width 4)
+              (setq python-indent-offset 4)))
 #+END_SRC
 ** Html
 Indentation
@@ -676,7 +676,7 @@ Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
     :config
     (dashboard-setup-startup-hook)
     (setq initial-buffer-choice
-         (lambda () 
+          (lambda ()
             (let ((buf (get-buffer "*dashboard*")))
               (unless buf
                 (setq buf (get-buffer-create "*dashboard*")))
@@ -1019,11 +1019,6 @@ This goes without saying but you can replace bash with your shell of choice.
     (interactive (list my-term-shell)))
   (ad-activate 'ansi-term)
 #+END_SRC
-** Easy to remember keybinding
-In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "<s-return>") 'ansi-term)
-#+END_SRC
 * Programming
 Minor, non-completion related settings and plugins for writing code.
 ** Column 80 limit
@@ -1075,8 +1070,8 @@ Minor, non-completion related settings and plugins for writing code.
 #+END_SRC
 ** Compiling
 #+BEGIN_SRC emacs-lisp
-(define-key global-map (kbd "C-,") 'compile)
-(define-key global-map (kbd "C-.") 'recompile)
+(define-key prog-mode-map (kbd "C-,") 'compile)
+(define-key prog-mode-map (kbd "C-.") 'recompile)
 #+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp

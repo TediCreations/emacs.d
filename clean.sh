@@ -23,5 +23,6 @@ rm -rf .dap-breakpoints
 rm -rf .lsp-session-v1
 rm -rf smex-items
 rm -rf transient
+rm -rf .cache
 
 echo "Emacs directory is clean"
