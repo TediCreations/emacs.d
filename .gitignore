@@ -2,49 +2,7 @@
 *#
 .#*
 *~
-recentf
-ac-comphist.dat
-.emacs.desktop
-.emacs.desktop.lock
-eshell
 
 # Generated files
-custom.el
-config.el
-config.org_archive
-projectile-bookmarks.eld
-ede-projects.el
-dmenu-items
+/config.el
 .python-environments
-
-# Folders
-auto-save-list
-elpa
-packages
-semanticdb
-.cache
-
-# Temporary file
-test.el
-
-# Irony server
-/irony/
-
-# lsp-mode
-.lsp-session-v1
-
-# Dap-mode
-.dap-breakpoints
-
-# Stackoverflow
-.sx/
-
-# Smex
-smex-items
-
-# Magit
-transient
-
-# Org-roam
-/.org-id-locations
-/org-roam.db
