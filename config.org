@@ -54,51 +54,9 @@ https://github.com/kiwanami/emacs-epc/issues/35
 ** Customization file
    This save customizations somewhere other than the initialization file.
 #+BEGIN_SRC emacs-lisp
-   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+   (setq custom-file (expand-file-name "custom.el" init-el-directory))
    (when (file-exists-p custom-file)
    (load custom-file))
-#+END_SRC
-** Package manager
-#+BEGIN_SRC emacs-lisp
-  (eval-and-compile
-    (setq load-prefer-newer t
-      package-user-dir (concat user-emacs-directory "packages")
-      package--init-file-ensured t
-      package-enable-at-startup nil)
-
-    (unless (file-directory-p package-user-dir)
-      (make-directory package-user-dir t))
-    )
-
-  (eval-and-compile
-    (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
-
-  (eval-when-compile
-    (require 'package)
-    (package-initialize)
-    (add-to-list 'package-archives '("gnu"          . "https://elpa.gnu.org/packages/") t)
-    (add-to-list 'package-archives '("melpa"        . "https://melpa.org/packages/") t)
-    (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-    (add-to-list 'package-archives '("org"          . "https://orgmode.org/elpa/") t)
-
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package)
-      ;; TODO: Emacs 29.1
-      ;;(package-install 'diminish)
-      (package-install 'quelpa)
-      (package-install 'bind-key)
-      )
-
-    (setq use-package-always-ensure t)
-    (setq use-package-expand-minimally t)
-
-    (require 'use-package)
-    )
-
-  ;; TODO: Emacs 29.1
-  ;;(require 'diminish)
-  (require 'bind-key)
 #+END_SRC
 * Configuration
 ** Visiting the configuration
@@ -107,7 +65,7 @@ https://github.com/kiwanami/emacs-epc/issues/35
   (defun tedi:config-visit ()
     "Visits the emacs config file"
     (interactive)
-    (find-file (concat user-emacs-directory "config.org")))
+    (find-file (concat init-el-directory "config.org")))
   (global-set-key (kbd "C-c e") 'tedi:config-visit)
 #+END_SRC
 ** Reloading the configuration
@@ -116,7 +74,7 @@ https://github.com/kiwanami/emacs-epc/issues/35
   (defun tedi:config-reload ()
     "Reloads the configuration file"
     (interactive)
-    (org-babel-load-file (concat user-emacs-directory "config.org"))
+    (org-babel-load-file (concat init-el-directory "config.org"))
     )
   (global-set-key (kbd "C-c r") 'tedi:config-reload)
 #+END_SRC
@@ -495,11 +453,6 @@ TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
                     indent-tabs-mode nil
                     sh-indent-for-case-alt '+))
             )
-
-  (use-package lsp-mode
-    :commands lsp
-    :hook
-    (sh-mode . lsp))
 #+END_SRC
 ** C/C++ style is bsd( Allman )
 #+BEGIN_SRC emacs-lisp
@@ -683,14 +636,14 @@ Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
               (unless buf
                 (setq buf (get-buffer-create "*dashboard*")))
               buf)))
-    (setq dashboard-startup-banner (concat user-emacs-directory "img/dashLogo.png"))
+    (setq dashboard-startup-banner (concat init-el-directory "img/dashLogo.png"))
     (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code.")
 
     (setq dashboard-items '((recents  . 5)
-			    (bookmarks . 5)
-			    (projects . 5)
-			    (agenda . 5)
-			    (registers . 5)))
+                            (bookmarks . 5)
+                            (projects . 5)
+                            (agenda . 5)
+                            (registers . 5)))
 
     ;; Do not center content.
     (setq dashboard-center-content nil)
@@ -716,8 +669,9 @@ Run 'M-x all-the-icons-install-fonts' in order to download the icon fonts
 Disable the mouse only inside emacs. This is usefull in a laptop and as an exercise to not use the mouse at all.
 #+BEGIN_SRC emacs-lisp
   (use-package disable-mouse
-    :ensure t)
-  (global-disable-mouse-mode)
+    :ensure t
+    :config
+    (global-disable-mouse-mode))
 #+END_SRC
 ** Which key
 Brings up help on key combinations.
@@ -851,10 +805,10 @@ This will help me setup ergonomics
 #+END_SRC
 ** Helpful
 #+BEGIN_SRC emacs-lisp
-(use-package helpful
-  :general
-  ("C-h f" 'helpful-function)
-  ("C-h v" 'helpful-variable))
+  (use-package helpful
+    :bind
+    ("C-h f" . helpful-function)
+    ("C-h v" . helpful-variable))
 #+END_SRC
 ** Smex
 Make counsel-M-x to remember (and sort) commands
@@ -1075,15 +1029,6 @@ Minor, non-completion related settings and plugins for writing code.
 (define-key prog-mode-map (kbd "C-,") 'compile)
 (define-key prog-mode-map (kbd "C-.") 'recompile)
 #+END_SRC
-** yasnippet
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :config
-    (use-package yasnippet-snippets
-      :ensure t)
-    (yas-reload-all))
-#+END_SRC
 ** flycheck
 In order for flycheck to work with:
 - C/C++:
@@ -1092,35 +1037,34 @@ In order for flycheck to work with:
   =M-x jedi:install-server=
 Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck_as_your_new_best_friend/
 #+BEGIN_SRC emacs-lisp
-  (defhydra tedi:checkSource (:color blue)
-    "
-      ^
-      ^Flycheck^          ^Errors^            ^Checker^
-      ^────────^──────────^──────^────────────^───────^─────
-      _q_ quit            _<_ previous        _?_ describe
-      _M_ manual          _>_ next            _d_ disable
-      _v_ verify setup    _f_ check           _m_ mode
-      ^^                  _l_ list            _s_ select
-      ^^                  ^^                  ^^
-      "
-    ("q" nil)
-    ("<" flycheck-previous-error :color pink)
-    (">" flycheck-next-error :color pink)
-    ("?" flycheck-describe-checker)
-    ("M" flycheck-manual)
-    ("d" flycheck-disable-checker)
-    ("f" flycheck-buffer)
-    ("l" flycheck-list-errors)
-    ("m" flycheck-mode)
-    ("s" flycheck-select-checker)
-    ("v" flycheck-verify-setup))
-
   (use-package flycheck
     :ensure t
     :requires hydra
-    :bind ("C-c f" . tedi:checkSource/body)
+    :bind ("C-c v" . tedi:checkSource/body)
     :init (global-flycheck-mode)
     :custom
+    (defhydra tedi:checkSource (:color blue)
+      "
+        ^
+        ^Flycheck^          ^Errors^            ^Checker^
+        ^────────^──────────^──────^────────────^───────^─────
+        _q_ quit            _<_ previous        _?_ describe
+        _M_ manual          _>_ next            _d_ disable
+        _v_ verify setup    _f_ check           _m_ mode
+        ^^                  _l_ list            _s_ select
+        ^^                  ^^                  ^^
+      "
+      ("q" nil)
+      ("<" flycheck-previous-error :color pink)
+      (">" flycheck-next-error :color pink)
+      ("?" flycheck-describe-checker)
+      ("M" flycheck-manual)
+      ("d" flycheck-disable-checker)
+      ("f" flycheck-buffer)
+      ("l" flycheck-list-errors)
+      ("m" flycheck-mode)
+      ("s" flycheck-select-checker)
+      ("v" flycheck-verify-setup))
     (flycheck-display-errors-delay .3)
     ;;(flycheck-stylelintrc "~/.stylelintrc.json")
     )
@@ -1371,6 +1315,8 @@ url: https://howardism.org/Technical/Emacs/orgmode-wordprocessor.html
 ** Install org and configure
 #+BEGIN_SRC emacs-lisp
   (use-package org
+    ;; It is first installed in init.el so tell elpaca to use that one.
+    :elpaca nil
     :ensure t
     :config
     (org-babel-do-load-languages
@@ -1462,10 +1408,10 @@ Here is how we add more of them!
 *** Reveal.js
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal
-    :ensure t)
-  (require 'ox-reveal)
-  (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-4.1.0/")
-  (setq org-reveal-title-slide nil)
+    :ensure t
+    :config
+    (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-4.1.0/")
+    (setq org-reveal-title-slide nil))
 #+END_SRC
 ** Org Roam
 *** Fast note insertion for a smoother writing flow
@@ -1572,9 +1518,9 @@ Edit multiple regions simultaneously
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
     :ensure t)
-  (require 'iedit)
-  ;;This is a bug in Mac but in linux works.(I do not need a fix)
-  ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
+    ;; :config
+    ;; This is a bug in Mac but in linux works.(I do not need a fix)
+    ;; (define-key global-map (kbd "C-c ;") 'iedit-mode)
 #+END_SRC
 * Avy
 Navigation to any place inside the window
@@ -1628,6 +1574,7 @@ For python also run: pip install python-language-server[all]
     (setq lsp-pyls-plugins-pycodestyle-ignore '("W191" "E501"))
     ; (setq lsp-headline-breadcrumb-mode -1)
     :hook (
+           (sh-mode . lsp)
            (python-mode . lsp)
            ;; if you want which-key integration
            (lsp-mode . lsp-enable-which-key-integration))
@@ -1659,18 +1606,18 @@ For python also run: pip install python-language-server[all]
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+END_SRC
 * New
-** Bindings
+** TODO Bindings
 #+BEGIN_SRC emacs-lisp
-  (general-define-key                                          ;"M-x" 'smex
-   "C-s" 'counsel-grep-or-swiper)
+;;  (general-define-key                                          ;"M-x" 'smex
+;;   "C-s" 'counsel-grep-or-swiper)
 
-  (general-define-key
-   :prefix "C-c"
-   ;; bind "C-c a" to 'org-agenda
-   "j" 'counsel-git-grep
-   "s" 'eshell
-   "b" 'butterfly
-   )
+;;  (general-define-key
+;;   :prefix "C-c"
+;;   ;; bind "C-c a" to 'org-agenda
+;;   "j" 'counsel-git-grep
+;;   "s" 'eshell
+;;   "b" 'butterfly
+;;   )
 #+END_SRC
 ** Git
 #+BEGIN_SRC emacs-lisp
