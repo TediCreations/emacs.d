@@ -12,4 +12,4 @@ steps:
   settings:
     repo: tedicreations/emacs
     tags: [ latest ]
-    dry_run: true   
+    dry_run: true

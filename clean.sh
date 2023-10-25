@@ -5,6 +5,7 @@ rm -rf custom.el
 rm -rf test.el
 rm -rf recentf
 rm -rf config.el
+rm -rf config.org_archive
 rm -rf elpa
 rm -rf packages
 rm -rf ede-projects.el
