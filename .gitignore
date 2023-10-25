@@ -44,3 +44,7 @@ smex-items
 
 # Magit
 transient
+
+# Org-roam
+/.org-id-locations
+/org-roam.db

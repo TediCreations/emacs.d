@@ -26,4 +26,8 @@ rm -rf smex-items
 rm -rf transient
 rm -rf .cache
 
+# Org roam
+rm -rf .org-id-locations
+rm -rf org-roam.db
+
 echo "Emacs directory is clean"

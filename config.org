@@ -1467,6 +1467,106 @@ Here is how we add more of them!
   (setq org-reveal-root "file:///home/tedi/.emacs.d/reveal.js-4.1.0/")
   (setq org-reveal-title-slide nil)
 #+END_SRC
+** Org Roam
+*** Fast note insertion for a smoother writing flow
+
+Sometimes while writing, you’ll want to create a new node in your Org Roam notes without interrupting your writing flow! Typically you would use org-roam-node-insert, but when you create a new note with this command, it will open the new note after it gets created.
+
+We can define a function that enables you to create a new note and insert a link in the current document without opening the new note’s buffer.
+
+This will allow you to quickly create new notes for topics you’re mentioning while writing so that you can go back later and fill those notes in with more details!
+
+#+begin_src emacs-lisp
+  (defun my/org-roam-node-insert-immediate (arg &rest args)
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
+#+end_src
+*** Install and configure org-roam
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+  :ensure t
+  :custom
+
+  ;; This is where all my org-roam notes are stored.
+  (org-roam-directory "~/org/roam")
+
+  ;; This is the relative path to *org-roam-directory* where dailies are stored.
+  (setq org-roam-dailies-directory "daily/")
+
+  ;; Display the org-roam note type in the mini-buffer.
+  ;;(setq org-roam-node-display-template
+  ;;      (concat "Hello: ${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  ;;(setq org-roam-node-display-template "${title:*} {tags:50}")
+  ;;(setq org-roam-node-display-template "{tags:50}")
+
+  ;; My templates
+  (org-roam-completion-everywhere t)
+  ;;(org-roam-completion-system 'default)
+
+  ;; My templates for new notes
+  (org-roam-capture-templates
+   '(
+     ("d" "default" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "notes/${slug}-%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
+      :unnarrowed t)
+     ("n" "note" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "notes/${slug}-%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
+      :unnarrowed t)
+     ("p" "blog post" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "blog/${slug}.org" "#+title: ${title}\n#+filetags: :blog:\n")
+      :immediate-finish t
+      :unnarrowed t)
+     ))
+
+  ;; Template for org-roam dailies.
+  (setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         (file "~/.emacs.d/templates/org-roam/daily.org")
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
+
+  ;; Configuring what is displayed in the buffer
+  (setq org-roam-mode-sections
+        (list #'org-roam-backlinks-section
+              #'org-roam-reflinks-section
+              #'org-roam-unlinked-references-section
+              ))
+  :bind (("C-c l" . org-roam-buffer-toggle)
+         ("C-c f" . org-roam-node-find)
+         ("C-c i" . org-roam-node-insert)
+         ("C-c a" . my/org-roam-node-insert-immediate)
+         ("C-c v" . org-roam-node-random))
+  :config
+  ;;(org-roam-setup)
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
+  ;; Publish org-roam
+  (require 'org-roam-export)
+  (org-roam-db-autosync-mode))
+#+END_SRC
+*** UI
+#+begin_src emacs-lisp
+  ; Dependency of org-roam-ui
+  (use-package websocket
+      :after org-roam)
+
+    (use-package org-roam-ui
+        :after org-roam ;; or :after org
+    ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+    ;;         a hookable mode anymore, you're advised to pick something yourself
+    ;;         if you don't care about startup time, use
+    ;;  :hook (after-init . org-roam-ui-mode)
+        :config
+        (setq org-roam-ui-sync-theme t
+              org-roam-ui-follow t
+              org-roam-ui-update-on-save t
+              org-roam-ui-open-on-start t))
+#+end_src
 * Iedit
 Edit multiple regions simultaneously
 #+BEGIN_SRC emacs-lisp
