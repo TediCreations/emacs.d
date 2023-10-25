@@ -1,0 +1,96 @@
+#+STARTUP: overview
+#+TITLE: Experimentation config area
+
+* Editor config
+#+begin_src elisp
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+#+end_src
+* Ansible
+#+begin_src elisp
+  (use-package ansible
+    :ensure t)
+#+end_src
+* Docker
+#+begin_src elisp
+  (use-package dockerfile-mode
+    :ensure t)
+  (use-package docker-compose-mode
+    :ensure t)
+#+end_src
+* Markdown
+#+begin_src elisp
+  (use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode
+  (("README\\.md\\'" . gfm-mode)
+   ("\\.md\\'" . markdown-mode)
+   ("\\.markdown\\'" . markdown-mode))
+  :custom
+  (markdown-command "/usr/bin/pandoc"))
+#+end_src
+* Ngix
+#+begin_src elisp
+(use-package nginx-mode
+  :ensure t)
+#+end_src
+* Ivy Rich
+#+begin_src elisp
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1)
+    :config
+    (setq ivy-format-function #'ivy-format-function-line))
+#+end_src
+* Move text (line or region) up and down
+#+begin_src elisp
+  (use-package move-text
+    :config
+    (defun indent-region-advice (&rest ignored)
+      (let ((deactivate deactivate-mark))
+        (if (region-active-p)
+            (indent-region (region-beginning) (region-end))
+          (indent-region (line-beginning-position) (line-end-position)))
+        (setq deactivate-mark deactivate)))
+
+    (advice-add 'move-text-up :after 'indent-region-advice)
+    (advice-add 'move-text-down :after 'indent-region-advice))
+
+  (general-define-key
+   "M-<up>"   'move-text-up
+   "M-<down>" 'move-text-down)
+#+end_src
+* Vertigo
+#+begin_src elisp
+  (use-package vertico
+    :elpaca (:files (:defaults "extensions/*"))
+    :init (vertico-mode)
+    :bind (:map vertico-map
+                ("C-<backspace>" . vertico-directory-up))
+    :custom (vertico-cycle t)
+    :custom-face (vertico-current ((t (:background "#1d1f21")))))
+
+  (use-package marginalia
+    :after vertico
+    :init (marginalia-mode)
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+#+end_src
+
+#+begin_src elisp
+  (use-package embark
+  :bind ("C-." . embark-act))
+#+end_src
+
+#+begin_src elisp
+  (use-package paradox
+  :defer 1
+  :custom
+  (paradox-column-width-package 25)
+  (paradox-display-star-count nil)
+  (paradox-execute-asynchronously t)
+  (paradox-hide-wiki-packages t)
+  :config (paradox-enable))
+#+end_src

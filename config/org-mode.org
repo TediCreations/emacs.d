@@ -1,0 +1,244 @@
+#+STARTUP: overview
+#+TITLE: Org-mode configuration
+
+* Org
+One of the absolute greatest features of emacs is called "org-mode".
+This very file has been written in org-mode, a lot of other configurations are written in org-mode, same goes for
+academic papers, presentations, schedules, blogposts and guides.
+Org-mode is one of the most complex things ever, lets make it a bit more usable with some basic configuration.
+
+Those are all rather self-explanatory.
+
+** Common settings
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (setq org-src-window-setup 'current-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+#+END_SRC
+** Hide asterisks etc characters to behave more like a word processor.
+url: https://howardism.org/Technical/Emacs/orgmode-wordprocessor.html
+#+begin_src emacs-lisp
+  (setq org-hide-emphasis-markers t)
+#+end_src
+** Open org link in the same window
+#+begin_src emacs-lisp
+  (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
+#+end_src
+** Return follows link
+#+begin_src emacs-lisp
+  (customize-set-variable 'org-return-follows-link t)
+#+end_src
+** Display links as the description provided
+#+begin_src emacs-lisp
+  (customize-set-variable 'org-link-descriptive t)
+#+end_src
+** Syntax highlighting for documents exported to HTML
+#+BEGIN_SRC emacs-lisp
+  (use-package htmlize
+    :ensure t)
+#+END_SRC
+** Install org and configure
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    ;; It is first installed in init.el so tell elpaca to use that one.
+    :elpaca nil
+    :ensure t
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       ;; https://orgmode.org/worg/org-contrib/babel/languages.html
+       (awk . t)
+       (ditaa . t)
+       (dot . t)
+       (css . t)
+       (calc .t)
+       (C . t)
+       (emacs-lisp . t)
+       (haskell . t)
+       (gnuplot . t)
+       (latex . t)
+       ;;(ledger . t)
+       (js . t)
+       ;;(http . t)
+       (perl . t)
+       (python . t)
+       (R . t)
+       (scheme . t)
+       ;;(sh . t)
+       (shell . t)
+       (sql . t)
+       (sqlite . t)
+       )))
+#+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+#+END_SRC
+** Line wrapping
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook
+            (lambda ()
+               (visual-line-mode 1)))
+#+END_SRC
+* Exporting options
+One of the best things about org is the ability to export your file to many formats.
+Here is how we add more of them!
+** Hugo
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-hugo
+    :ensure t
+    :after ox)
+#+END_SRC
+** latex
+#+BEGIN_SRC emacs-lisp
+  (when (file-directory-p "/usr/share/emacs/site-lisp/tex-utils")
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/tex-utils")
+    (require 'xdvi-search))
+#+END_SRC
+** Twitter Bootstrap
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-twbs
+    :ensure t)
+#+END_SRC
+** Reveal.js
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-reveal
+    :ensure t
+    :config
+    (setq org-reveal-root (concat "file://" init-el-directory "reveal.js-4.1.0/"))
+    (setq org-reveal-title-slide nil))
+#+END_SRC
+* Org Bullets
+Makes it all look a bit nicer, I hate looking at asterisks.
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+** Easy-to-add emacs-lisp template
+Hitting tab after an "<el" in an org-mode file will create a template for elisp insertion.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist
+               '("el" . "src emacs-lisp"))
+
+  (add-to-list 'org-structure-template-alist
+               '("py" . "src python -n"))
+
+  (add-to-list 'org-structure-template-alist
+               '("cl" .  "src C"))
+
+  (add-to-list 'org-structure-template-alist
+               '("sh" .  "src shell"))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'yas-minor-mode)
+#+END_SRC
+* Org Roam
+** Fast note insertion for a smoother writing flow
+
+Sometimes while writing, you’ll want to create a new node in your Org Roam notes without interrupting your writing flow! Typically you would use org-roam-node-insert, but when you create a new note with this command, it will open the new note after it gets created.
+
+We can define a function that enables you to create a new note and insert a link in the current document without opening the new note’s buffer.
+
+This will allow you to quickly create new notes for topics you’re mentioning while writing so that you can go back later and fill those notes in with more details!
+
+#+begin_src emacs-lisp
+  (defun my/org-roam-node-insert-immediate (arg &rest args)
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
+#+end_src
+** Install and configure org-roam
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+  :ensure t
+  :commands org-roam db-sync
+  :custom
+
+  ;; This is where all my org-roam notes are stored.
+  (org-roam-directory "~/org/roam")
+
+  ;; This is the relative path to *org-roam-directory* where dailies are stored.
+  (setq org-roam-dailies-directory "daily/")
+
+  ;; Display the org-roam note type in the mini-buffer.
+  ;;(setq org-roam-node-display-template
+  ;;      (concat "Hello: ${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  ;;(setq org-roam-node-display-template "${title:*} {tags:50}")
+  ;;(setq org-roam-node-display-template "{tags:50}")
+
+  ;; My templates
+  (org-roam-completion-everywhere t)
+  ;;(org-roam-completion-system 'default)
+
+  ;; My templates for new notes
+  (org-roam-capture-templates
+   '(
+     ("d" "default" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "notes/${slug}-%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
+      :unnarrowed t)
+     ("n" "note" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "notes/${slug}-%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
+      :unnarrowed t)
+     ("p" "blog post" plain
+      (file "~/.emacs.d/templates/org-roam/default.org")
+      :if-new (file+head "blog/${slug}.org" "#+title: ${title}\n#+filetags: :blog:\n")
+      :immediate-finish t
+      :unnarrowed t)
+     ))
+
+  ;; Template for org-roam dailies.
+  (setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         (file "~/.emacs.d/templates/org-roam/daily.org")
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
+
+  ;; Configuring what is displayed in the buffer
+  (setq org-roam-mode-sections
+        (list #'org-roam-backlinks-section
+              #'org-roam-reflinks-section
+              #'org-roam-unlinked-references-section
+              ))
+  :bind (("C-c l" . org-roam-buffer-toggle)
+         ("C-c f" . org-roam-node-find)
+         ("C-c i" . org-roam-node-insert)
+         ("C-c a" . my/org-roam-node-insert-immediate)
+         ("C-c v" . org-roam-node-random))
+  :config
+  ;;(org-roam-setup)
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
+  ;; Publish org-roam
+  (require 'org-roam-export)
+  (org-roam-db-autosync-mode))
+#+END_SRC
+** UI
+#+begin_src emacs-lisp
+  ; Dependency of org-roam-ui
+  (use-package websocket
+      :after org-roam)
+
+  (use-package org-roam-ui
+    :after org-roam ;; or :after org
+    ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+    ;;         a hookable mode anymore, you're advised to pick something yourself
+    ;;         if you don't care about startup time, use
+    ;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t)
+    (org-roam-ui-follow-mode))
+#+end_src

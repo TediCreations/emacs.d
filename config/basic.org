@@ -1,0 +1,605 @@
+#+STARTUP: overview
+#+TITLE: Basic configuration
+
+* Bugfixes
+Package *cl* is deprecated since Emacs-27
+fix: Packages MUST be updated to use (require 'cl-lib) in place of (require 'cl).
+url: https://github.com/kiwanami/emacs-epc/issues/35
+#+BEGIN_SRC emacs-lisp
+  (setq byte-compile-warnings '(cl-functions))
+#+END_SRC
+* Configuration
+** Visiting the configuration
+Quickly visit the configuration file.
+#+BEGIN_SRC emacs-lisp
+  (defun my/config-visit ()
+    "Visits the emacs config file"
+    (interactive)
+    (find-file (concat init-el-directory "config.org")))
+
+  (my/leader-keys
+    "e" '(my/config-visit  :which-key "Visit config"))
+#+END_SRC
+** Reloading the configuration
+Quickly reloads the configuration file.
+#+BEGIN_SRC emacs-lisp
+  (defun my/config-reload ()
+    "Reloads the configuration file"
+    (interactive)
+    (my/load-custom-config "config.org"))
+
+  (my/leader-keys
+    "r" '(my/config-reload  :which-key "Reload config"))
+#+END_SRC
+* Basic Settings
+These are setting that do not depend on packages and are built-in enhancements to the UI.
+** Looks
+*** Remove default startup screen
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+#+END_SRC
+*** Remove toolbar
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode 0)
+#+END_SRC
+*** Remove menubar
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode 0)
+#+END_SRC
+*** Remove scrollbar
+#+BEGIN_SRC emacs-lisp
+  (scroll-bar-mode 0)
+#+END_SRC
+*** Show line numbers
+#+BEGIN_SRC emacs-lisp
+  (global-display-line-numbers-mode t)
+#+END_SRC
+*** TODO Make fullscreen
+#+BEGIN_SRC emacs-lisp
+  (set-frame-parameter nil 'fullscreen 'fullboth)
+#+END_SRC
+*** Fonts
+#+BEGIN_SRC emacs-lisp
+  (when (member "Source Code Pro" (font-family-list)) (set-frame-font "Source Code Pro-10" t t))
+  (set-face-attribute 'default nil :height 100)     ;;Default font size %
+#+END_SRC
+*** Disable scratch message
+#+BEGIN_SRC emacs-lisp
+  (setq initial-scratch-message nil)
+#+END_SRC
+*** Do not blink cursor
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)
+#+END_SRC
+*** Disable bell
+This is annoying, remove this line if you like being visually reminded of events.
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+END_SRC
+*** Set UTF-8 encoding
+#+BEGIN_SRC emacs-lisp
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+#+END_SRC
+*** TODO Highligh current line
+=hl-line= is awesome! It's not very awesome in the terminal version of emacs though, so we don't use that.
+Besides, it's only used for programming.
+#+BEGIN_SRC emacs-lisp
+  (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
+#+END_SRC
+*** TODO Pretty symbols
+Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
+#+BEGIN_SRC emacs-lisp
+;;  (when window-system
+;;    (use-package pretty-mode
+;;      :ensure t
+;;      :config
+;;      (global-pretty-mode 0)))
+#+END_SRC
+*** TODO Visualize whitespace
+#+BEGIN_SRC emacs-lisp
+  (require 'whitespace)
+
+  (setq whitespace-style '(face empty tabs tab-mark lines-tail trailing))
+
+  ;;Visualize tabs as a pipe character - "|"
+  (custom-set-faces '(whitespace-tab ((t (:foreground "#636363")))))
+  (setq whitespace-display-mappings '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+
+  (global-whitespace-mode t)
+#+END_SRC
+** Functionality
+*** I do not care about system buffers
+See only buffers that are associated to a file
+=buffer-predicate= decides which buffers you want to see in the cycle for
+ windows in that frame. The function buffer-file-name returns nil for buffers
+that are not associated to files and a non-nil value (the filename) for those
+ that are.
+After doing so, C-x <left> and C-x <right> called from windows in that frame
+will only cycle through buffers with associated files.
+In short it will Cycle through buffers whose name does not start with an asterisk
+#+BEGIN_SRC emacs-lisp
+  ;;(defun tedi:let-cycle-on-my-buffers-only ()
+  ;;  (interactive)
+  ;;    (set-frame-parameter (selected-frame) 'buffer-predicate #'buffer-file-name))
+  ;;(add-hook 'after-init-hook #'tedi:let-cycle-on-my-buffers-only)
+
+  (add-to-list 'default-frame-alist '(buffer-predicate . buffer-file-name))
+#+END_SRC
+*** ibuffer
+Use 'ibuffer' instead of 'list-buffers'
+#+BEGIN_SRC emacs-lisp
+  (defalias 'list-buffers 'ibuffer)
+#+END_SRC
+Hide all buffers that start with an asterisk
+#+BEGIN_SRC emacs-lisp
+  (require 'ibuf-ext)
+  (add-to-list 'ibuffer-never-show-predicates "^\\*")
+#+END_SRC
+Hide groups that are empty
+#+BEGIN_SRC emacs-lisp
+(setq ibuffer-show-empty-filter-groups nil)
+#+END_SRC
+Automatically update the ibuffer
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+               (ibuffer-auto-mode 1)
+               (ibuffer-switch-to-saved-filter-groups "home")))
+#+END_SRC
+ibuffer formats
+#+BEGIN_SRC emacs-lisp
+  (setq ibuffer-formats
+        '((mark modified read-only " "
+                (name 18 18 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark modified read-only " "
+                (name 45 45 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide))))
+#+END_SRC
+Group my buffer by version control
+#+BEGIN_SRC emacs-lisp
+  (use-package ibuffer-vc
+    :ensure t
+    :config
+    (add-hook 'ibuffer-hook
+              (lambda ()
+                (ibuffer-vc-generate-filter-groups-by-vc-root)
+                (ibuffer-vc-set-filter-groups-by-vc-root)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                  (ibuffer-do-sort-by-alphabetic))))
+    (add-to-list 'ibuffer-fontification-alist '(5 buffer-file-name 'font-lock-keyword-face)))
+#+END_SRC
+*** Dired
+Change information shown
+#+BEGIN_SRC emacs-lisp
+  (setq dired-listing-switches "-aBhl  --group-directories-first")
+#+END_SRC
+Make dired open in the same window when using RET or ^
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load "dired"
+    (lambda ()
+      (define-key dired-mode-map (kbd "RET") 'dired-find-file)
+      (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))
+      )
+    )
+#+END_SRC
+*** Typing replaces marked region
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode 1)
+#+END_SRC
+*** Move line up/down
+#+BEGIN_SRC emacs-lisp
+  (defun my/move-line-up ()
+    "Move up the current line."
+    (interactive)
+    (transpose-lines 1)
+    (forward-line -2)
+    (indent-according-to-mode))
+
+  (defun my/move-line-down ()
+    "Move down the current line."
+    (interactive)
+    (forward-line 1)
+    (transpose-lines 1)
+    (forward-line -1)
+    (indent-according-to-mode))
+
+  (global-set-key [(meta up)]   'my/move-line-up)
+  (global-set-key [(meta down)] 'my/move-line-down)
+#+END_SRC
+*** Go to line
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-g") 'goto-line)
+#+END_SRC
+*** Kill buffer
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+END_SRC
+*** Multiplexing emacs and emacsclient
+Opening a new file in the same emacs-session requires the use of emacsclient.
+The emacs command can be itself wrapped to do the smarter job to open the file
+if the session exists.
+To start session you need to start-server. This snippet will create server in
+first session of emacs. Add this to your emacs configuration file.
+#+BEGIN_SRC emacs-lisp
+  ;;(require 'server)
+  ;;(unless (server-running-p)
+  ;;  (server-start))
+#+END_SRC
+*** Disable backups and auto-saves
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+*** Disable lockfiles
+Emacs keeps track of files that you are currently editing by creating a symbolic link that looks like .#-emacsa08196. I do not need it.
+#+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
+#+END_SRC
+*** Smooth Scrolling
+#+BEGIN_SRC emacs-lisp
+;; Vertical Scroll
+(setq scroll-step 1)
+(setq scroll-margin 16)
+(setq scroll-conservatively 101)
+(setq scroll-up-aggressively 0.01)
+(setq scroll-down-aggressively 0.01)
+(setq auto-window-vscroll nil)
+(setq fast-but-imprecise-scrolling nil)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+(setq mouse-wheel-progressive-speed nil)
+;; Horizontal Scroll
+(setq hscroll-step 1)
+(setq hscroll-margin 1)
+#+END_SRC
+*** Change yes-or-no questions into y-or-n questions
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** Async
+Lets us use asynchronous processes wherever possible, pretty useful.
+#+BEGIN_SRC emacs-lisp
+  (use-package async
+    :ensure t
+    :init (dired-async-mode 1))
+#+END_SRC
+*** Navigate throught buffers
+#+BEGIN_SRC emacs-lisp
+  (windmove-default-keybindings)
+#+END_SRC
+*** Blindly follow symlinks without asking me
+#+BEGIN_SRC emacs-lisp
+  (setq vc-follow-symlinks nil)
+#+END_SRC
+*** Auto refresh file if changed outside
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode t)
+#+END_SRC
+*** Enable recent opened files
+#+begin_src elisp
+  (recentf-mode t)
+#+end_src
+*** Remember and restore the last cursor location of opened files
+#+begin_src elisp
+  (save-place-mode t)
+#+end_src
+*** Don't pop up UI dialogs when prompting
+#+begin_src elisp
+  (setq use-dialog-box 0)
+#+end_src
+*** Revert Dired and other buffers
+#+begin_src elisp
+  (setq global-auto-revert-non-file-buffers t)
+#+end_src
+* Disable mouse
+#+begin_src elisp
+  (use-package disable-mouse
+    :ensure t
+    :config
+    (global-disable-mouse-mode))
+#+end_src
+* Centered window
+#+begin_src elisp
+  (use-package centered-window
+    :custom
+    (cwm-centered-window-width 130)
+    (cwm-frame-internal-border 0)
+    (cwm-incremental-padding t)
+    (cwm-incremental-padding-% 2)
+    (cwm-left-fringe-ratio 0)
+    (cwm-use-vertical-padding t)
+    :config (centered-window-mode))
+#+end_src
+* Load theme
+url: https://github.com/oneKelvinSmith/monokai-emacs
+#+begin_src elisp :no-eval
+  (use-package monokai-theme
+    :ensure t
+    :config
+    (setq monokai-user-variable-pitch t)
+    (load-theme 'monokai t))
+#+end_src
+* Modeline
+The modeline is the heart of emacs, it offers information at all times, it's persistent
+and verbose enough to gain a full understanding of modes and states you are in.
+
+I use the modeline from spacemacs.
+#+begin_src emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+
+    ;; Show full filepath
+    (spaceline-define-segment buffer-id
+      (if (buffer-file-name)
+          (abbreviate-file-name (buffer-file-name))
+        (powerline-buffer-id)))
+
+    ;; Hide minor mode
+    (spaceline-toggle-minor-modes-off)
+
+    ;; Show encoding
+    (setq spaceline-buffer-encoding-abbrev-p t)
+
+    ;; Show line and column
+    (setq spaceline-line-column-p t)
+    (setq spaceline-line-p t)
+
+    (setq powerline-default-separator (quote arrow))
+    (spaceline-spacemacs-theme))
+#+end_src
+Add icons at the modeline
+#+begin_src emacs-lisp
+  (use-package mode-icons
+    :ensure t
+    :after spaceline
+    :defer 1
+    :config
+    (mode-icons-mode))
+#+end_src
+* Packages
+** TODO Ag
+The Silver Searcher
+https://github.com/Wilfred/ag.el
+
+The binary is also needed:
+https://github.com/ggreer/the_silver_searcher
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package ag
+  ;;   :ensure t
+  ;;   :config
+  ;;   ;; Show colors
+  ;;   (setq ag-highlight-search t)
+  ;;   ;; Reuse the same *ag* buffer for all your searches:
+  ;;   (setq ag-reuse-buffers 't)
+  ;;   :general
+  ;;   ("C-q" . ag-project)
+  ;;   ("C-d" . ag-dired))
+#+END_SRC
+** Hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t)
+#+END_SRC
+** TODO Yasnippet
+#+BEGIN_SRC emacs-lisp
+;;  (use-package yasnippet
+;;    :ensure t
+;;    :config
+;;    (use-package yasnippet-snippets
+;;      :ensure t)
+;;    (yas-reload-all))
+#+END_SRC
+** All the icons
+#+begin_src elisp
+  (use-package all-the-icons
+    :commands all-the-icons-install-fonts
+    :ensure t)
+#+end_src
+** All the icons for dired
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons-dired
+    :ensure t
+    :requires all-the-icons
+    :config
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+#+END_SRC
+** Dashboard
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :requires all-the-icons
+    :config
+      ;;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+      (setq initial-buffer-choice
+            (lambda ()
+              (let ((buf (get-buffer "*dashboard*")))
+                (unless buf
+                  (setq buf (get-buffer-create "*dashboard*")))
+                buf)))
+
+      (setq dashboard-startup-banner (concat init-el-directory "img/dashLogo.png"))
+      (setq dashboard-banner-logo-title "First, solve the problem. Then, write the code.")
+
+      (setq dashboard-items '((recents  . 5)
+                              (bookmarks . 5)
+                              (projects . 5)
+                              (agenda . 5)
+                              (registers . 5)))
+
+      ;; Do not center content.
+      (setq dashboard-center-content nil)
+
+      ;; Do not show info about the packages loaded and the init time
+      (setq dashboard-set-init-info nil)
+
+      ;; Disable shortcut "jump" indicators for each section.
+      (setq dashboard-show-shortcuts nil)
+
+      ;; Disable footer with random quotes
+      (setq dashboard-set-footer nil)
+
+      ;; Add icons
+      (setq dashboard-set-heading-icons t)
+      (setq dashboard-set-file-icons t)
+
+      ;;To show agenda for the upcoming seven days set the variable show-week-agenda-p to t.
+      (setq show-week-agenda-p t)
+      (setq dashboard-org-agenda-categories '("Tasks" "Appointments"))
+
+
+      (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+      (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+      ;;(add-hook 'after-init-hook #'dashboard-insert-startupify-lists)
+      ;;(add-hook 'after-init-hook #'dashboard-refresh-buffer)
+      (add-hook 'emacs-startup-hook #'dashboard-refresh-buffer)
+      (dashboard-setup-startup-hook))
+#+END_SRC
+** TODO Try
+#+begin_src elisp
+  ;;(use-package try
+  ;;  :ensure t)
+#+end_src
+** nwim
+Smart move when you browse in code.
+#+BEGIN_SRC emacs-lisp
+  (use-package mwim
+    :bind
+    ("C-a" . mwim-beginning-of-code-or-line)
+    ("C-e" . mwim-end-of-code-or-line))
+#+END_SRC
+** Projectile
+Projectile is an awesome project manager, mostly because it recognizes directories
+with a =.git= directory as projects and helps you manage them accordingly.
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-mode 1))
+#+END_SRC
+** Magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :requires projectile
+    :bind ("C-x g" . magit-status)
+    :init
+    (setq projectile-switch-project-action 'magit-status)
+    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+#+END_SRC
+** Swiper
+Counsel is a requirement for swiper. Swiper makes search easier.
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+  :ensure t)
+
+(use-package swiper
+  :ensure counsel
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-load-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c k") 'counsel-ag)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+#+END_SRC
+** Neotree
+[Config issue] When emacs starts in daemon mode the icons are not shown from a gui client
+https://github.com/jaypei/emacs-neotree/issues/194
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :requires swiper
+    :requires all-the-icons
+    :requires projectile
+    :defer 1
+    :init
+    ;; Autorefresh
+    (setq neo-autorefresh t)
+
+    :config
+    (global-set-key [f8] 'neotree-toggle)
+    ;; Use nerd for GUI and ascii for the terminal.
+    (setq neo-theme (if (display-graphic-p) 'icons 'nerd))
+
+    ;; Every time when the neotree window is opened, let it find current file and jump to node.
+    (setq neo-smart-open t)
+    ;; When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
+    (setq projectile-switch-project-action 'neotree-projectile-action)
+    ;; Show hidden files
+    (setq-default neo-show-hidden-files t)
+
+    (setq neo-vc-integration '(face char))
+    (setq neo-toggle-window-keep-p t)
+    (setq neo-force-change-root t)
+
+    (add-hook 'neotree-mode-hook
+              (lambda ()
+                ;;(setq-local mode-line-format nil)
+                (setq-local display-line-numbers nil)
+                (local-set-key (kbd "C-f") 'swiper)
+                (local-set-key (kbd "C-s") 'isearch-forward)
+                (local-set-key (kbd "C-M-s") 'isearch-forward-regexp)
+                (local-set-key (kbd "C-r") 'isearch-backward)
+                (local-set-key (kbd "C-M-r") 'isearch-backward-regexp)
+                (local-set-key (kbd "o") 'neotree-open-file-in-system-application)
+                (local-set-key (kbd "r") 'neotree-refresh)))
+
+    ;; Add icons
+    (add-to-list 'all-the-icons-icon-alist
+                 '("^build\.boot$" all-the-icons-alltheicon "clojure-line" :height 1.0 :face all-the-icons-blue :v-adjust 0.0))
+
+    ;; face customizations
+    (set-face-attribute 'neo-vc-edited-face nil
+                        :foreground "#E2C08D")
+    (set-face-attribute 'neo-vc-added-face nil
+                        :foreground "green4")
+    )
+#+END_SRC
+** Keyfreq
+Record keybind use
+This will help me setup ergonomics
+#+BEGIN_SRC emacs-lisp
+  (use-package keyfreq
+    :config
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
+#+END_SRC
+** Helpful
+#+begin_src elisp
+  (use-package helpful
+    :general
+    ("C-h o" 'helpful-symbol)
+    ("C-h k" 'helpful-key)
+    ("C-h f" 'helpful-function)
+    ("C-h v" 'helpful-variable))
+#+end_src
+** TODO Smex
+Make counsel-M-x to remember (and sort) commands
+#+BEGIN_SRC emacs-lisp
+(use-package smex)
+#+END_SRC

@@ -1,0 +1,727 @@
+\#+STARTUP: overview
+#+TITLE: Programming configuration
+
+* Minor conveniences
+Emacs is at it's best when it just does things for you, shows you the way, guides you so to speak.
+This can be best achieved using a number of small extensions. While on their own they might not be particularly
+impressive. Together they create a nice environment for you to work in.
+** Subwords
+Emacs treats camelCase strings as a single word by default, this changes said behaviour.
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
+#+END_SRC
+** Electric
+If you write any code, you may enjoy this.
+Typing the first character in a set of 2, completes the second one after your cursor.
+Opening a bracket? It's closed for you already. Quoting something? It's closed for you already.
+
+You can easily add and remove pairs yourself, have a look.
+#+BEGIN_SRC emacs-lisp
+(setq electric-pair-pairs '(
+                           (?\{ . ?\})
+                           (?\( . ?\))
+                           (?\[ . ?\])
+                           (?\" . ?\")
+                           ))
+#+END_SRC
+
+And now to enable it
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode t)
+#+END_SRC
+** Beacon
+While changing buffers or workspaces, the first thing you do is look for your cursor.
+Unless you know its position, you can not move it efficiently. Every time you change
+buffers, the current position of your cursor will be briefly highlighted now.
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :config
+      (beacon-mode 1))
+#+END_SRC
+** Rainbow
+Mostly useful if you are into web development or game development.
+Every time emacs encounters a hexadecimal code that resembles a color, it will automatically highlight
+it in the appropriate color. This is a lot cooler than you may think.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook 'rainbow-mode))
+#+END_SRC
+** Show parens
+I forgot about that initially, it highlights matching parens when the cursor is just behind one of them.
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
+** Rainbow delimiters
+Colors parentheses and other delimiters depending on their depth, useful for any language using them,
+especially lisp.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
+** Expand region
+A pretty simple package, takes your cursor and semantically expands the region, so words, sentences, maybe the contents of some parentheses, it's awesome, try it out.
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind ("C-q" . er/expand-region))
+#+END_SRC
+** Hungry deletion
+On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
+Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
+You may not like it, thus disable it if you must, but it's pretty decent.
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :config
+      (global-hungry-delete-mode))
+#+END_SRC
+** Zapping to char
+A nifty little package that kills all text between your cursor and a selected character.
+A lot more useful than you might think. If you wish to include the selected character in the killed region,
+change =zzz-up-to-char= into =zzz-to-char=.
+#+BEGIN_SRC emacs-lisp
+  (use-package zzz-to-char
+    :ensure t
+    :bind ("M-z" . zzz-up-to-char))
+#+END_SRC
+* Kill ring
+There is a lot of customization to the kill ring, and while I have not used it much before,
+I decided that it was time to change that.
+** Maximum entries on the ring
+The default is 60, I personally need more sometimes.
+#+BEGIN_SRC emacs-lisp
+  (setq kill-ring-max 100)
+#+END_SRC
+** popup-kill-ring
+Out of all the packages I tried out, this one, being the simplest, appealed to me most.
+With a simple M-y you can now browse your kill-ring like browsing autocompletion items.
+C-n and C-p totally work for this.
+#+BEGIN_SRC emacs-lisp
+  (use-package popup-kill-ring
+    :ensure t
+    :bind ("M-y" . popup-kill-ring))
+#+END_SRC
+* Tramp
+#+BEGIN_SRC emacs-lisp
+  (setq tramp-default-method "ssh")
+#+END_SRC
+* The terminal
+I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
+** Default shell should be bash
+I don't know why this is a thing, but asking me what shell to launch every single
+time I open a terminal makes me want to slap babies, this gets rid of it.
+This goes without saying but you can replace bash with your shell of choice.
+#+BEGIN_SRC emacs-lisp
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+#+END_SRC
+* Iedit
+Edit multiple regions simultaneously
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
+    :ensure t)
+  ;;This is a bug in Mac but in linux works.(I do not need a fix)
+  ;;(define-key global-map (kbd "C-c ;") 'iedit-mode)
+#+END_SRC
+* Avy
+Navigation to any place inside the window
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind ("M-s" . avy-goto-char))
+#+END_SRC
+* Programming
+** GDB
+*** Debugging environment
+#+BEGIN_SRC emacs-lisp
+  (setq
+   ;; use gdb-many-windows by default
+   gdb-many-windows t
+
+   ;; ?
+   gdb-use-separate-io-buffer t
+
+   ;; Non-nil means display source file containing the main routine at startup
+   gdb-show-main t
+   )
+#+END_SRC
+*** Fix source file opens in the wrong window
+#+BEGIN_SRC emacs-lisp
+  ;; Toggle window dedication
+  (defun tedi:toggle-window-dedicated ()
+    "Toggle whether the current active window is dedicated or not"
+    (interactive)
+    (message
+     (if (let (window (get-buffer-window (current-buffer)))
+           (set-window-dedicated-p window
+                                   (not (window-dedicated-p window))))
+         "Window '%s' is dedicated"
+       "Window '%s' is normal")
+     (current-buffer)))
+
+  ;; Sets up the windows to make the command window dedicated
+  (advice-add 'gdb-setup-windows :after
+              (lambda () (set-window-dedicated-p (selected-window) t)))
+
+  ;; Prevent gdb from popping i/o window to the foreground on every output op
+  (setq-default gdb-display-io-nopopup t)
+#+END_SRC
+*** Quitting messes up the window configuration
+How do you quit anyway? I think the correct way is just to run quit in the
+command window. But no matter how you quit GUD always messes up whatever window
+configuration you had before you opened it.
+
+We can fix that by saving the window layout when we run M-x gdb by storing the
+layout into a register in gud-mode-hook. The gud-sentinal function runs when
+some event occurs on the inferior gdb process. We can hook that to restore the
+window state when the process exits.
+#+BEGIN_SRC emacs-lisp
+  (defconst gud-window-register 123456)
+
+  (defun gud-quit ()
+    (interactive)
+    (gud-basic-call "quit"))
+
+  (add-hook 'gud-mode-hook
+            (lambda ()
+              (gud-tooltip-mode)
+              (window-configuration-to-register gud-window-register)
+              (local-set-key (kbd "C-c q") 'gud-quit)))
+
+  (advice-add 'gud-sentinel :after
+              (lambda (proc msg)
+                (when (memq (process-status proc) '(signal exit))
+                  (jump-to-register gud-window-register)
+                  (bury-buffer))))
+#+END_SRC
+*** Debugging keybindings
+TODO: http://emacs.1067599.n8.nabble.com/Gud-keybindings-td328833.html
+#+BEGIN_SRC emacs-lisp
+  (require 'gud)
+
+  (defun tedi:gud-toggle-breakpoint ()
+    "Enable/disable breakpoint at the current line of source buffer."
+    (interactive)
+    (save-excursion
+      (beginning-of-line)
+      (let* ((bol (point))
+             (ovl (overlay-get (car (overlays-in bol bol)) 'before-string))
+             (bptno (get-text-property 0 'gdb-bptno ovl))
+             (bpten (get-text-property 0 'gdb-enabled ovl)))
+        (if bpten (gud-basic-call (format "-break-disable %s" bptno))
+          (gud-basic-call (format "-break-enable %s" bptno))))))
+
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (local-set-key [f1]    'gud-run)
+              (local-set-key [f2]    'gud-cont)
+
+              ;;(local-set-key [f3]    'gdb)
+
+              (local-set-key [f5]    'gud-next)
+              (local-set-key [f6]    'gud-step)
+              (local-set-key [f7]    'gud-until)
+              ;;(local-set-key [f8]    'gud-cont)
+              (local-set-key [f9]    'tedi:gud-toggle-breakpoint)
+              ;;(local-set-key [f9]    'gud-break)
+              )
+            )
+#+END_SRC
+** Coding style
+*** Bash/sh
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'sh-mode-hook
+            (lambda ()
+              (setq sh-basic-offset 2
+                    sh-indentation 2
+                    sh-indent-for-case-label 0
+                    indent-tabs-mode nil
+                    sh-indent-for-case-alt '+))
+            )
+#+END_SRC
+*** C/C++ style is bsd( Allman )
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq c-default-style "bsd"
+                    c-basic-offset 8)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq c-default-style "bsd"
+                    c-basic-offset 8)))
+#+END_SRC
+*** C/C++ Indentation is tabs
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode t)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode t)))
+#+END_SRC
+*** C/C++ Tab is 8 spaces
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq-default tab-width 8)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq-default tab-width 8)))
+#+END_SRC
+*** Python Indentation is tabs and each tab is 8 spaces
+Since python.el indents only 4 columns, by default, the above will use tabs when the indent is a multiple of 8 and tabs followed by spaces for other indents.
+If you need to use a single tab for every indent level, you'll also need to set python-indent to 8. Then you can set tab-width to whatever width you want to see the tabs displayed as.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode nil)
+              (setq-default tab-width 4)
+              (setq python-indent-offset 4)))
+#+END_SRC
+*** Html
+Indentation
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :mode
+    (("\\.phtml\\'" . web-mode)
+     ("\\.tpl\\.php\\'" . web-mode)
+     ("\\.jsp\\'" . web-mode)
+     ("\\.as[cp]x\\'" . web-mode)
+     ("\\.erb\\'" . web-mode)
+     ("\\.mustache\\'" . web-mode)
+     ("\\.djhtml\\'" . web-mode)
+     ("\\.jst.ejs\\'" . web-mode)
+     ("\\.html?\\'" . web-mode))
+    :init
+    (setq web-mode-enable-block-face t)
+    (setq web-mode-enable-comment-keywords t)
+    (setq web-mode-enable-current-element-highlight t)
+    (setq web-mode-enable-current-column-highlight t)
+    (setq web-mode-script-padding 2)
+    (setq web-mode-style-padding 2)
+    (setq web-mode-comment-style 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-engines-alist
+          '(("django" . "focus/.*\\.html\\'")
+            ("ctemplate" . "realtimecrm/.*\\.html\\'")
+            )
+          )
+    )
+#+END_SRC
+** Indentation
+*** Auto indent
+#+BEGIN_SRC emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :init
+    (setq aggressive-indent-comments-too t)
+    :config
+    (global-aggressive-indent-mode 1))
+#+END_SRC
+*** Indent this buffer
+#+BEGIN_SRC emacs-lisp
+  (defun tedi:indent-c-buffer ()
+    "Use astyle command to auto format c/c++ code."
+    (interactive "r")
+    (if (executable-find "astyle")
+        (progn
+          (setq cursorPosition (point))
+          (shell-command-on-region
+           (point-min) (point-max)
+           (concat
+            "astyle")
+           (current-buffer) t
+           (get-buffer-create "*Astyle Errors*") t)
+          (goto-char cursorPosition))
+      (message "Cannot find binary \"astyle\", please install first.")))
+#+END_SRC
+*** Indent buffer before save
+#+BEGIN_SRC emacs-lisp
+(defun tedi:indent-before-save ()
+    "Auto styling before saving."
+    (interactive)
+    (when (member major-mode '(cc-mode c++-mode c-mode))
+      (tedi:indent-c-buffer)))
+
+(add-hook 'c-mode-common-hook (lambda () (add-hook 'before-save-hook 'tedi:indent-before-save)))
+#+END_SRC
+Minor, non-completion related settings and plugins for writing code.
+** Column 80 limit
+#+BEGIN_SRC emacs-lisp
+  (setq-default display-fill-column-indicator-column 79)
+  (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+#+END_SRC
+** Doxygen
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-doxygen
+    :ensure t
+    :config
+    (highlight-doxygen-global-mode t))
+#+END_SRC
+** Helm-Gtags
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-gtags
+    :ensure t
+    )
+
+  ;; Enable helm-gtags-mode
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  ;(add-hook 'python-mode-hook 'helm-gtags-mode)
+
+  ;; customize
+  (custom-set-variables
+   '(helm-gtags-path-style 'relative)
+   '(helm-gtags-ignore-case t)
+   '(helm-gtags-auto-update t))
+
+  ;; key bindings
+  (with-eval-after-load 'helm-gtags
+    (define-key helm-gtags-mode-map (kbd "M-.")   'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "M-,")   'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "M-u")   'helm-gtags-update-tags)
+
+    (define-key helm-gtags-mode-map (kbd "M-t")   'helm-gtags-find-tag)
+    (define-key helm-gtags-mode-map (kbd "M-r")   'helm-gtags-find-rtag)
+    (define-key helm-gtags-mode-map (kbd "M-s")   'helm-gtags-find-symbol)
+    (define-key helm-gtags-mode-map (kbd "M-p")   'helm-gtags-parse-file)
+
+    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+    )
+
+  (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
+#+END_SRC
+** Compiling
+#+BEGIN_SRC emacs-lisp
+(define-key prog-mode-map (kbd "C-,") 'compile)
+(define-key prog-mode-map (kbd "C-.") 'recompile)
+#+END_SRC
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    
+    :ensure t
+    :config
+    (use-package yasnippet-snippets
+      :ensure t)
+    (yas-reload-all))
+#+END_SRC
+** flycheck
+In order for flycheck to work with:
+- C/C++:
+  =M-x irony-install-server=
+- Python:
+  =M-x jedi:install-server=
+Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck_as_your_new_best_friend/
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :requires hydra
+    :bind ("C-c v" . tedi:checkSource/body)
+    :init
+    (global-flycheck-mode)
+    :config
+    (defhydra tedi:checkSource (:color blue)
+      "
+        ^
+        ^Flycheck^          ^Errors^            ^Checker^
+        ^────────^──────────^──────^────────────^───────^─────
+        _q_ quit            _<_ previous        _?_ describe
+        _M_ manual          _>_ next            _d_ disable
+        _v_ verify setup    _f_ check           _m_ mode
+        ^^                  _l_ list            _s_ select
+        ^^                  ^^                  ^^
+        "
+      ("q" nil)
+      ("<" flycheck-previous-error :color pink)
+      (">" flycheck-next-error :color pink)
+      ("?" flycheck-describe-checker)
+      ("M" flycheck-manual)
+      ("d" flycheck-disable-checker)
+      ("f" flycheck-buffer)
+      ("l" flycheck-list-errors)
+      ("m" flycheck-mode)
+      ("s" flycheck-select-checker)
+      ("v" flycheck-verify-setup))    :custom
+      (flycheck-display-errors-delay .3)
+      ;;(flycheck-stylelintrc "~/.stylelintrc.json")
+      )
+#+END_SRC
+** company mode
+I set the delay for company mode to kick in to half a second, I also make sure that
+it starts doing its magic after typing in only 2 characters.
+
+I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 0.0)
+    (setq company-minimum-prefix-length 1)
+
+    ;; set default `company-backends'
+    (setq company-backends
+          '((company-files          ; files & directory
+             company-keywords       ; keywords
+             company-capf
+             company-yasnippet
+             )
+            (company-abbrev company-dabbrev)
+            ))
+    )
+
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "SPC") #'company-abort))
+#+END_SRC
+** specific languages
+Be it for code or prose, completion is a must.
+After messing around with =auto-completion= for a while I decided to drop it
+in favor of =company=, and it turns out to have been a great decision.
+
+Each category also has additional settings.
+*** c/c++
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c++-mode-hook 'yas-minor-mode)
+  (add-hook 'c-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck-clang-analyzer
+    :ensure t
+    :config
+    (with-eval-after-load 'flycheck
+      (require 'flycheck-clang-analyzer)
+       (flycheck-clang-analyzer-setup)))
+#+END_SRC
+**** company
+Requires libclang to be installed.
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+    (add-hook 'c++-mode-hook 'company-mode)
+    (add-hook 'c-mode-hook 'company-mode))
+
+  (use-package company-c-headers
+    :ensure t)
+
+  (use-package company-irony
+    :ensure t
+    :config
+    (setq company-backends
+          '((company-files          ; files & directory
+             company-keywords       ; keywords
+             company-capf
+             company-yasnippet
+             company-c-headers
+             company-gtags
+             company-clang
+             company-dabbrev-code
+             company-irony
+             )
+            (company-abbrev company-dabbrev)
+            ))
+    )
+
+
+  (use-package irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+END_SRC
+*** python
+**** Interpreter version
+#+BEGIN_SRC emacs-lisp
+    (setq python-shell-interpreter "python3")
+#+END_SRC
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook 'flycheck-mode)
+#+END_SRC
+**** company
+#+BEGIN_SRC emacs-lisp
+;  (with-eval-after-load 'company
+;      (add-hook 'python-mode-hook 'company-mode))
+
+;  (use-package company-jedi
+;    :ensure t
+;    :config
+;      (require 'company)
+;      (add-to-list 'company-backends 'company-jedi))
+
+;  (defun python-mode-company-init ()
+;    (setq-local company-backends '((company-jedi
+;                                    company-yasnippet
+;                                    company-etags
+;                                    company-dabbrev-code))))
+
+;  (use-package company-jedi
+;    :ensure t
+;    :config
+;      (require 'company)
+;      (add-hook 'python-mode-hook 'python-mode-company-init))
+#+END_SRC
+*** emacs-lisp
+**** eldoc
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+#+END_SRC
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** company
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
+
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
+
+  (use-package slime-company
+    :ensure t
+    :init
+      (require 'company)
+      (slime-setup '(slime-fancy slime-company)))
+#+END_SRC
+*** lua
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'flycheck-mode)
+#+END_SRC
+**** company
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'company-mode)
+
+  (defun custom-lua-repl-bindings ()
+    (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
+    (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer))
+
+  (defun lua-mode-company-init ()
+    (setq-local company-backends '((company-lua
+                                    company-etags
+                                    company-dabbrev-code))))
+
+  (use-package company-lua
+    :ensure t
+    :config
+      (require 'company)
+      (setq lua-indent-level 4)
+      (setq lua-indent-string-contents t)
+      (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
+      (add-hook 'lua-mode-hook 'lua-mode-company-init))
+#+END_SRC
+*** bash
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'flycheck-mode)
+#+END_SRC
+**** company
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'company-mode)
+
+  (defun shell-mode-company-init ()
+    (setq-local company-backends '((company-shell
+                                    company-shell-env
+                                    company-etags
+                                    company-dabbrev-code))))
+
+  (use-package company-shell
+    :ensure t
+    :config
+      (require 'company)
+      (add-hook 'shell-mode-hook 'shell-mode-company-init))
+#+END_SRC
+* LSP
+** Add icons to company
+#+BEGIN_SRC emacs-lisp
+  (use-package company-box
+    :after company
+    :hook (company-mode . company-box-mode))
+#+END_SRC
+** Glue company and lsp
+After emacs 27 update this stopped working.
+#+BEGIN_SRC emacs-lisp
+;;  (use-package company-lsp
+;;    :after (company lsp-mode)
+;;    :ensure t)
+#+END_SRC
+** Lsp-mode
+May need to run lsp-install-server and select the language of choice
+For python also run: pip install python-language-server[all]
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :after (
+            flycheck
+            which-key)
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    ; (setq lsp-keymap-prefix "C-c l")
+    ;; Ignore tabs for identation and lines bigger than 80 chars
+    (setq lsp-pyls-plugins-pycodestyle-ignore '("W191" "E501"))
+    ; (setq lsp-headline-breadcrumb-mode -1)
+    :hook (
+           (sh-mode . lsp)
+           (python-mode . lsp)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
+#+END_SRC
+** Lsp-mode UI
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :commands lsp-ui-mode
+    :config
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-doc-enable t
+          lsp-ui-flycheck-enable t
+          lsp-ui-imenu-enable t
+          lsp-ui-sideline-ignore-duplicate t))
+#+END_SRC
+** Extra (not all needed)
+#+BEGIN_SRC emacs-lisp
+;; if you are helm user
+  ;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+  ;; if you are ivy user
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  ;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+  ;; optionally if you want to use debugger
+  (use-package dap-mode)
+  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+#+END_SRC
