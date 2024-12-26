@@ -1,11 +1,13 @@
+#syntax=docker/dockerfile:1.12.1
+
 # ----------------------------------------------------------
 # Base image
 
-ARG VERSION="3.17.2"
+ARG VERSION="3.21.0"
 
 # https://hub.docker.com/_/alpine
 FROM alpine:${VERSION}
-MAINTAINER Kanelis Ilias <hkanelhs@yahoo.gr>
+LABEL maintainer="Kanelis Elias <e.kanelis@voidbuffer.com>"
 
 # ----------------------------------------------------------
 # Packages to install
@@ -40,13 +42,15 @@ WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
 # Get emacs configs
-COPY --chown=${USERNAME}:${USERNAME} . /home/${USERNAME}/.emacs.d
+ARG EMACS_HOME="/home/${USERNAME}/.config/emacs"
+COPY --chown=${USERNAME}:${USERNAME} . ${EMACS_HOME}
 
 # Build config
-RUN emacs -q --batch --eval="(load-file \"~/.emacs.d/init.el\")"
+# RUN cd ${EMACS_HOME} && ./install_emacs
+RUN cd ${EMACS_HOME} && ./test-startup.sh
 
 # ----------------------------------------------------------
 # Startup
 
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
-CMD ["bash", "-i"]
+CMD ["emacs"]

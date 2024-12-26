@@ -1,0 +1,111 @@
+#!/bin/sh
+#
+# Script Name: install_eamcs.sh
+#
+# Description: Script that installs Emacs.
+#
+# Author: Kanelis Elias (e.kanelis@voidbuffer.com)
+# Date: 2023/12/26
+#
+# Usage: ./install_eamcs.sh
+#        ./install_eamcs.sh X.Y
+#
+# -----------------------------------------------------------------------------
+
+# Fail fast
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o noglob    # disable filename globbing
+
+# -----------------------------------------------------------------------------
+# Utils
+#
+
+# Prints messages with optional colorization to stderr.
+# usage: msg "Hello"
+msg() {
+  echo >&2 "${1-}"
+}
+
+# Displays an error message and exits the script with the specified exit code.
+# usage: die "Error..."
+# usage: die "Error..." 2
+die() {
+  msg="$1"
+  code=${2-1} # default exit status 1
+  msg "${msg}"
+  exit "${code}"
+}
+
+
+# -----------------------------------------------------------------------------
+# Main
+#
+
+# Mirror and version selection
+EMACS_VERSION="${*:-29.4}"
+MIRROR="ftp.cc.uoc.gr/mirrors/gnu/emacs/"
+TAR="emacs-${EMACS_VERSION}.tar.xz"
+OUTPUT_PATH="$(mktemp -d /tmp/emacs-XXXXXX)"
+
+# Detect OS
+if [ -f /etc/os-release ]; then
+    # Source the os-release file to get OS details
+    . /etc/os-release
+    msg "${NAME} detected."
+else
+    die "/etc/os-release not found. Unable to detect OS."
+fi
+
+# Install dependencies based on the OS
+msg "Installing dependencies"
+case "${ID}" in
+    linuxmint)
+        PACKAGES="libgtk-3-dev \
+                  libxpm-dev libjpeg-dev libgif-dev libtiff-dev \
+                  libgnutls28-dev \
+                  libtinfo-dev \
+                  libncurses5-dev \
+                  libjansson4 libjansson-dev"
+        sudo apt-get update && sudo apt-get install -y ${PACKAGES}
+        ;;
+    alpine)
+        PACKAGES="texinfo gtk+3.0-dev autoconf build-base \
+                  libxpm-dev \
+                  libjpeg-turbo \
+                  giflib-dev \
+                  tiff-dev \
+                  gnutls-dev \
+                  ncurses-dev \
+                  jansson-dev"
+        sudo apk update && sudo apk add --no-cache ${PACKAGES}
+        ;;
+    *)
+        die "Installation does not support this OS"
+        ;;
+esac
+
+# Download emacs
+wget "${MIRROR}${TAR}" -P "${OUTPUT_PATH}"
+
+# Untar
+cd "${OUTPUT_PATH}" || { echo "Failed to cd into ${OUTPUT_PATH}"; exit 1; }
+tar -xJf "${TAR}"
+
+# Go to build dir
+FILENAME=$(basename -- "${OUTPUT_PATH}/${TAR}")
+FILENAME="${FILENAME%.*}"
+FILENAME="${FILENAME%.*}"
+cd "${FILENAME}" || { echo "Failed to cd into ${FILENAME}"; exit 1; }
+
+# Build and install
+./autogen.sh
+./configure
+make
+sudo make install
+
+# Clean
+rm -rf "${OUTPUT_PATH}"
+
+# Notify user
+msg "Done"

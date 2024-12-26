@@ -1,1 +1,14 @@
-/.git
+# Ignore git repository
+.git/
+.gitignore
+
+# Ignore Dockerignore file itself
+.dockerignore
+
+# Ignore CI configuration files (if not needed in the image)
+.drone.yml
+
+# Ignore license, readme, and makefile (if not required in the image)
+LICENSE
+README.md
+Makefile

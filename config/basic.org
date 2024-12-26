@@ -1,6 +1,32 @@
 #+STARTUP: overview
 #+TITLE: Basic configuration
 
+* General
+#+begin_src elisp
+  (use-package general
+    :ensure t
+    :config
+    ;; Enable general-evil-setup for ease of evil integration
+    (general-evil-setup t)
+    ;; Automatically unbind keys to avoid conflicts
+    (general-auto-unbind-keys)
+    ;; Enable general-override-mode for custom keybinding overrides
+    (general-override-mode)
+
+    (general-create-definer
+     my/leader-keys
+     :keymaps '(normal insert visual emacs)
+     :prefix "C-c"))
+
+  (elpaca-wait)
+
+  (my/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(5x5 :which-key "Open 5x5")
+      "a"   '(5x5 :which-key "Open 5x5 game")
+      "b"   '(5x5 :which-key "B"))
+#+end_src
+
 * Bugfixes
 Package *cl* is deprecated since Emacs-27
 fix: Packages MUST be updated to use (require 'cl-lib) in place of (require 'cl).
@@ -40,7 +66,8 @@ These are setting that do not depend on packages and are built-in enhancements t
 #+END_SRC
 *** Remove toolbar
 #+BEGIN_SRC emacs-lisp
-  (tool-bar-mode 0)
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode 0))
 #+END_SRC
 *** Remove menubar
 #+BEGIN_SRC emacs-lisp
@@ -227,7 +254,7 @@ Make dired open in the same window when using RET or ^
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x k") 'kill-this-buffer)
 #+END_SRC
-*** Multiplexing emacs and emacsclient
+*** TODO Multiplexing emacs and emacsclient
 Opening a new file in the same emacs-session requires the use of emacsclient.
 The emacs command can be itself wrapped to do the smarter job to open the file
 if the session exists.
@@ -303,6 +330,39 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 #+begin_src elisp
   (setq global-auto-revert-non-file-buffers t)
 #+end_src
+*** TODO Log minibuffer
+#+begin_src emacs-lisp
+  (setq debug-on-error t)
+
+  (defun log-errors-warnings-to-file (data)
+    "Log errors and warnings to a file."
+    (let ((log-file (expand-file-name "errors-warnings.log" user-emacs-directory)))
+      (with-temp-buffer
+        (insert (format "[%s] %s\n" (format-time-string "%Y-%m-%d %T") data))
+        (append-to-file (point-min) (point-max) log-file))))
+
+  (add-hook 'debugger-error-hook 'log-errors-warnings-to-file)
+#+end_src
+* Which keys
+URL: https://github.com/justbur/emacs-which-key
+#+begin_src elisp
+  (use-package which-key
+    :ensure t
+    :config
+    (setq which-key-sort-order 'which-key-prefix-then-key-order)
+    (which-key-mode)
+    (which-key-setup-minibuffer))
+#+end_src
+* Evil
+#+begin_src elisp
+  (use-package evil
+    :ensure t
+    :config
+    ;; Default state shall be emacs for now
+    (setq evil-default-state 'emacs)
+    ;; Enable the mode
+    (evil-mode 1))
+#+end_src
 * Disable mouse
 #+begin_src elisp
   (use-package disable-mouse
@@ -371,25 +431,34 @@ Add icons at the modeline
     (mode-icons-mode))
 #+end_src
 * Packages
-** TODO Ag
+** helm
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :config
+    (helm-mode 1))
+#+END_SRC
+** Ag
 The Silver Searcher
 https://github.com/Wilfred/ag.el
 
 The binary is also needed:
 https://github.com/ggreer/the_silver_searcher
 
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package ag
-  ;;   :ensure t
-  ;;   :config
-  ;;   ;; Show colors
-  ;;   (setq ag-highlight-search t)
-  ;;   ;; Reuse the same *ag* buffer for all your searches:
-  ;;   (setq ag-reuse-buffers 't)
-  ;;   :general
-  ;;   ("C-q" . ag-project)
-  ;;   ("C-d" . ag-dired))
-#+END_SRC
+#+begin_src emacs-lisp
+  (use-package ag
+    :ensure t
+    :general
+    ("C-c C-q" 'ag-project)
+    ("C-c C-d" 'ag-dired)
+    :config
+    ;; Show colors
+    (setq ag-highlight-search t)
+    ;; Reuse the same *ag* buffer for all your searches:
+    (setq ag-reuse-buffers 't))
+    ;; Display search results in the same buffer as the search query
+    (setq ag-reuse-window 't)
+#+end_src
 ** Hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -397,12 +466,15 @@ https://github.com/ggreer/the_silver_searcher
 #+END_SRC
 ** TODO Yasnippet
 #+BEGIN_SRC emacs-lisp
-;;  (use-package yasnippet
-;;    :ensure t
-;;    :config
-;;    (use-package yasnippet-snippets
-;;      :ensure t)
-;;    (yas-reload-all))
+  (use-package yasnippet
+    :ensure t
+    :config
+    (yas-reload-all)
+    (add-hook 'prog-mode-hook #'yas-minor-mode))
+
+  (use-package yasnippet-snippets
+    :ensure t
+    :after yasnippet)
 #+END_SRC
 ** All the icons
 #+begin_src elisp
@@ -414,7 +486,7 @@ https://github.com/ggreer/the_silver_searcher
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons-dired
     :ensure t
-    :requires all-the-icons
+    :after all-the-icons
     :config
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+END_SRC
@@ -422,7 +494,7 @@ https://github.com/ggreer/the_silver_searcher
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
     :ensure t
-    :requires all-the-icons
+    :after all-the-icons
     :config
       ;;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
       (setq initial-buffer-choice
@@ -469,11 +541,6 @@ https://github.com/ggreer/the_silver_searcher
       (add-hook 'emacs-startup-hook #'dashboard-refresh-buffer)
       (dashboard-setup-startup-hook))
 #+END_SRC
-** TODO Try
-#+begin_src elisp
-  ;;(use-package try
-  ;;  :ensure t)
-#+end_src
 ** nwim
 Smart move when you browse in code.
 #+BEGIN_SRC emacs-lisp
@@ -493,51 +560,54 @@ with a =.git= directory as projects and helps you manage them accordingly.
 #+END_SRC
 ** Magit
 #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :requires projectile
-    :bind ("C-x g" . magit-status)
-    :init
-    (setq projectile-switch-project-action 'magit-status)
-    (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+      (use-package transient
+        :ensure t)
+
+      (use-package magit
+        :ensure t
+        :after (transient projectile)
+        :bind ("C-x g" . magit-status)
+        :init
+        (setq projectile-switch-project-action 'magit-status)
+        (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 #+END_SRC
 ** Swiper
-Counsel is a requirement for swiper. Swiper makes search easier.
-#+BEGIN_SRC emacs-lisp
-(use-package counsel
-  :ensure t)
+url: https://github.com/abo-abo/swiper
 
-(use-package swiper
-  :ensure counsel
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    (global-set-key (kbd "<f6>") 'ivy-resume)
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> l") 'counsel-load-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c k") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
-#+END_SRC
+Counsel is a requirement for swiper. Swiper makes search easier.
+
+#+begin_src emacs-lisp
+  (use-package swiper
+    :ensure t
+    :after counsel
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq enable-recursive-minibuffers t)
+      (global-set-key "\C-s" 'swiper)
+      (global-set-key (kbd "C-c C-r") 'ivy-resume)
+      (global-set-key (kbd "<f6>") 'ivy-resume)
+      (global-set-key (kbd "M-x") 'counsel-M-x)
+      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+      (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+      (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+      (global-set-key (kbd "<f1> l") 'counsel-load-library)
+      (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+      (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+      (global-set-key (kbd "C-c g") 'counsel-git)
+      (global-set-key (kbd "C-c j") 'counsel-git-grep)
+      (global-set-key (kbd "C-c k") 'counsel-ag)
+      (global-set-key (kbd "C-x l") 'counsel-locate)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+#+end_src
 ** Neotree
 [Config issue] When emacs starts in daemon mode the icons are not shown from a gui client
 https://github.com/jaypei/emacs-neotree/issues/194
 #+BEGIN_SRC emacs-lisp
   (use-package neotree
-    :requires swiper
-    :requires all-the-icons
-    :requires projectile
-    :defer 1
+    :ensure t
+    :after (swiper all-the-icons projectile)
     :init
     ;; Autorefresh
     (setq neo-autorefresh t)
@@ -599,8 +669,46 @@ This will help me setup ergonomics
     ("C-h f" 'helpful-function)
     ("C-h v" 'helpful-variable))
 #+end_src
-** TODO Smex
+** Smex
+url: https://github.com/nonsequitur/smex
 Make counsel-M-x to remember (and sort) commands
+
 #+BEGIN_SRC emacs-lisp
 (use-package smex)
 #+END_SRC
+** Ellama
+#+begin_src emacs-lisp
+  (use-package ellama
+    :init
+    ;; User's name
+    (setq ellama-user-nick "Elias")
+    ;; AI's name
+    (setq ellama-assistant-nick "Jarvis")
+    (setopt ellama-language "English")
+    (require 'llm-ollama)
+    (setopt ellama-provider
+            (make-llm-ollama
+             :host "dog.lan"
+             :port 11434
+             :chat-model "codellama:13b-instruct" :embedding-model "codellama:13b-instruct")))
+#+end_src
+** Clang-format
+#+begin_src emacs-lisp
+  (use-package f
+    :ensure t)
+
+  (use-package clang-format
+    :after (f projectile)
+    :init
+    (setq clang-format-style "file")
+    :hook ((c-mode . (lambda ()
+                       (add-hook 'before-save-hook #'my/clang-format-buffer-smart nil t)))
+           (c++-mode . (lambda ()
+                         (add-hook 'before-save-hook #'my/clang-format-buffer-smart nil t)))))
+
+    (defun my/clang-format-buffer-smart ()
+      "Reformat buffer if .clang-format exists in the projectile root."
+      (when (and (f-exists? (expand-file-name ".clang-format" (projectile-project-root)))
+                 (projectile-project-p))
+        (clang-format-buffer)))
+#+end_src

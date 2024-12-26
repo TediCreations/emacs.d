@@ -1,2 +1,2 @@
-;; We use straight so we do not want toi mix
+; We use elpaca
 (setq package-enable-at-startup nil)

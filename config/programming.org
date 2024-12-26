@@ -444,7 +444,7 @@ Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck
         _v_ verify setup    _f_ check           _m_ mode
         ^^                  _l_ list            _s_ select
         ^^                  ^^                  ^^
-        "
+      "
       ("q" nil)
       ("<" flycheck-previous-error :color pink)
       (">" flycheck-next-error :color pink)
@@ -455,10 +455,10 @@ Source: https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck
       ("l" flycheck-list-errors)
       ("m" flycheck-mode)
       ("s" flycheck-select-checker)
-      ("v" flycheck-verify-setup))    :custom
-      (flycheck-display-errors-delay .3)
-      ;;(flycheck-stylelintrc "~/.stylelintrc.json")
-      )
+      ("v" flycheck-verify-setup))
+    (flycheck-display-errors-delay .3)
+    ;;(flycheck-stylelintrc "~/.stylelintrc.json")
+    )
 #+END_SRC
 ** company mode
 I set the delay for company mode to kick in to half a second, I also make sure that

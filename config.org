@@ -6,53 +6,6 @@
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 [[./img/screen.png]]
 
-* General
-#+begin_src elisp
-  (use-package general
-    :demand t
-    :requires evil
-    :requires which-key
-    :config
-    (general-evil-setup t)
-    ;; Automatically unbind keys
-    (general-auto-unbind-keys)
-    ;; ?
-    (general-override-mode)
-
-    (general-create-definer
-     my/leader-keys
-     :keymaps '(normal insert visual emacs)
-     ;; :prefix "SPC"
-     ;; :global-prefix "C-SPC"))
-     :prefix "C-c"))
-
-  (elpaca-wait)
-
-  (my/leader-keys
-      "t"  '(:ignore t :which-key "toggles")
-      "tt" '(5x5 :which-key "Open 5x5")
-      "a"   '(5x5 :which-key "Open 5x5 game")
-      "b"   '(5x5 :which-key "B"))
-#+end_src
-* Which keys
-URL: https://github.com/justbur/emacs-which-key
-#+begin_src elisp
-  (use-package which-key
-    :config
-    (setq which-key-sort-order 'which-key-prefix-then-key-order)
-    (which-key-mode)
-    (which-key-setup-minibuffer))
-#+end_src
-* Evil
-#+begin_src elisp
-  (use-package evil
-    :ensure t
-    :config
-    ;; Default state shall be emacs for now
-    (setq evil-default-state 'emacs)
-    ;; Enable the mode
-    (evil-mode 1))
-#+end_src
 * Basic
 Load [[./config/basic.org]]
 #+begin_src elisp
@@ -66,7 +19,7 @@ Load [[./config/org-mode.org]]
 * Programming
 Load [[./config/programming.org]]
 #+begin_src elisp
-;;  (my/load-custom-config "config/programming.org")
+  ;;(my/load-custom-config "config/programming.org")
 #+end_src
 * Experiments
 Load [[./config/experiments.org]]

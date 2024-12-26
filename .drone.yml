@@ -10,6 +10,6 @@ steps:
 - name: Build
   image: plugins/docker
   settings:
-    repo: tedicreations/emacs
+    repo: voidbuffer/emacs
     tags: [ latest ]
     dry_run: true
